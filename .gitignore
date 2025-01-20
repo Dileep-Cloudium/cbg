@@ -1,0 +1,9 @@
+
+# Environments
+.env*
+!.env.sample
+
+node_modules
+.serverless
+.DS_Store
+bin

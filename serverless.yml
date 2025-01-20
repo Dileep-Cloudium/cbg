@@ -1,0 +1,291 @@
+# API Gateway HTTP API Integration with Lambda Functions
+
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: PBMAPI
+
+plugins:
+  - serverless-prune-plugin
+
+custom:
+  codename: NexusGate
+  accountSet: ${env:CBG_ACCOUNT_SET, 'arcadia'}
+  stage: ${env:CBG_ENVIRONMENT, 'develop'}
+  paramPath: "/${self:custom.stage}/service/core/nexusgate-pbmapi"
+
+  # Mandatory tags that will be added to all resources that support tags.
+  # https://aws.amazon.com/answers/account-management/aws-tagging-strategies/
+  tags:
+    ResourceGroup: ${opt:resourceGroup, 'NexusGate-ResourceGroup'}
+    Environment: ${env:CBG_ENVIRONMENT, 'develop'}
+    Customer: ${env:CBG_CUSTOMER, 'CBG'}
+    Application: ${opt:application, '${self:custom.codename}'}
+    ApplicationVersion: ${opt:applicationVersion, '1.0.0'}
+    ApplicationRole: ${opt:applicationRole, 'ServiceAPI'}
+    Service: ${opt:service, 'PBMAPI'}
+    InfrastructureVersion: ${opt:infrastructureVersion, '1.0.0'}
+    ProjectCostCenter: ${opt:projectCostCenter, '9493076548'}
+    OperatingCostCenter: ${opt:operatingCostCenter, '9493076548'}
+    Owner: ${opt:owner, 'fireteamosiris@withcbg.com'}
+    SecurityContact: ${opt:securityContact, 'fireteamosiris@withcbg.com'}
+    Confidentiality: ${opt:confidentiality, 'PII/PHI'}
+    Compliance: ${opt:compliance, 'HIPAA'}
+    AutomateOption: ${opt:automateOption, 'OptIn'}
+    AutomateAt: ${opt:automateAt, '9999-12-31 13:37'}
+
+  prune:
+    automatic: true
+    number: 5
+
+provider:
+  name: aws
+  runtime: provided.al2023
+  region: us-west-2
+
+  stackName: ${opt:stackName, '${self:custom.codename}-${self:service}-SLSLambda-P-CF'}
+
+  httpApi:
+    name: ${self:custom.codename}-${self:service}-HttpApi
+    metrics: true
+
+  environment:
+    STAGE: ${self:custom.stage}
+    DYNAMODB_TABLE_NAME: ${self:custom.codename}-${self:service}-AllItems1
+    GRAPHQL_ENDPOINT: ${ssm:${self:custom.paramPath}/config/GRAPHQL_ENDPOINT}
+
+    # Need to make this more secure.
+    GRAPHQL_API_KEY: ${ssm:${self:custom.paramPath}/config/GRAPHQL_API_KEY}
+
+    # SECRET_KEY: ${ssm:${self:custom.paramPath}/config/SECRET_KEY} # For JWT signing.
+
+  iam:
+    role:
+      name: ${self:custom.codename}-${self:service}-LambdaIAMRole
+      path: /
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+            - s3:DeleteObject
+            - s3:ListBucket
+          Resource:
+            - arn:aws:s3:::*
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:Query
+            - dynamodb:Scan
+          Resource:
+            - arn:aws:dynamodb:*:*:table/*
+
+  vpc:
+    securityGroupIds:
+      Fn::Split:
+        - ","
+        - ${ssm:${self:custom.paramPath}/config/SECURITY_GROUP_IDS}
+    subnetIds:
+      Fn::Split:
+        - ","
+        - ${ssm:${self:custom.paramPath}/config/SUBNET_IDS}
+
+  logs:
+    httpApi: true
+
+  deploymentBucket:
+    name: ${self:custom.accountSet}-${self:custom.stage}-artifacts
+    serverSideEncryption: AES256
+
+  # S3 prefix under which deployed artifacts should be stored.
+  deploymentPrefix: cloudformation/nexusgate-pbmapi
+
+  # Mandatory stack tags to tag all resources in Cloudformation stack
+  # that are taggable.
+  stackTags:
+    ResourceGroup: ${self:custom.tags.Application}-ResourceGroup
+    Name: ${self:custom.tags.Application}-${self:service}SLSLambda
+    Application: ${self:custom.tags.Application}
+    ApplicationVersion: ${self:custom.tags.ApplicationVersion}
+    ApplicationRole: ${self:custom.tags.ApplicationRole}
+    Service: ${self:custom.tags.Service}
+    Customer: ${self:custom.tags.Customer}
+    Environment: ${self:custom.tags.Environment}
+    InfrastructureVersion: ${self:custom.tags.InfrastructureVersion}
+    ProjectCostCenter: ${self:custom.tags.ProjectCostCenter}
+    OperatingCostCenter: ${self:custom.tags.OperatingCostCenter}
+    Owner: ${self:custom.tags.Owner}
+    SecurityContact: ${self:custom.tags.SecurityContact}
+    Confidentiality: ${self:custom.tags.Confidentiality}
+    Compliance: ${self:custom.tags.Compliance}
+    AutomateOption: ${self:custom.tags.AutomateOption}
+    AutomateAt: ${self:custom.tags.AutomateAt}
+
+package:
+  individually: true
+  patterns:
+    - '!./**'
+    - ./bin/**
+
+functions:
+  PBMAPI:
+    handler: bootstrap  # Value is ignored for provided.al2023 runtime.
+    name: ${self:custom.codename}-${self:service}LambdaFunc
+    description: Lambda function to proxy requests/responses through the NexusGate PBM API service.
+    package:
+      artifact: bin/ginapi/bootstrap.zip
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: any
+    tags:
+      Name: ${self:custom.codename}-${self:service}LambdaFunc
+      Datadog: monitored
+
+resources:
+  - Description: >-
+      This template deploys an AWS Lambda service with API Gateway for the NexusGate PBM API service.
+
+  - Resources:
+      HttpApiStage:
+        Type: AWS::ApiGatewayV2::Stage
+        Properties:
+          ApiId: !Ref HttpApi
+          StageName: $default
+          AutoDeploy: true
+
+      ApiGatewayDomainName:
+        Type: AWS::ApiGatewayV2::DomainName
+        Properties:
+          DomainName: nexusgate-pbmapi.${ssm:${self:custom.paramPath}/config/DOMAIN_NAME}
+          DomainNameConfigurations:
+            - CertificateArn: ${ssm:${self:custom.paramPath}/config/CERTIFICATE_ARN}
+              EndpointType: REGIONAL
+
+      ApiGatewayDomainNameMapping:
+        DependsOn:
+          - HttpApiStage
+          - ApiGatewayDomainName
+        Type: AWS::ApiGatewayV2::ApiMapping
+        Properties:
+          ApiId: !Ref HttpApi
+          DomainName: !Ref ApiGatewayDomainName
+          Stage: $default
+
+      Route53Record:
+        DependsOn:
+          - ApiGatewayDomainName
+        Type: AWS::Route53::RecordSet
+        Properties:
+          HostedZoneId: ${ssm:${self:custom.paramPath}/config/HOSTED_ZONE_ID}
+          Name: nexusgate-pbmapi.${ssm:${self:custom.paramPath}/config/DOMAIN_NAME}
+          Type: A
+          AliasTarget:
+            DNSName: !GetAtt ApiGatewayDomainName.RegionalDomainName
+            HostedZoneId: !GetAtt ApiGatewayDomainName.RegionalHostedZoneId
+
+      DynamoDBTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+          TableName: ${self:custom.codename}-${self:service}-AllItems1
+          TableClass: STANDARD
+          BillingMode: PROVISIONED
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+          PointInTimeRecoverySpecification:
+            PointInTimeRecoveryEnabled: true
+          SSESpecification:
+            SSEEnabled: true
+          AttributeDefinitions:
+            - AttributeName: pk
+              AttributeType: S
+            - AttributeName: sk
+              AttributeType: S
+            - AttributeName: gsi1pk
+              AttributeType: S
+            - AttributeName: gsi1sk
+              AttributeType: S
+            - AttributeName: gsi2pk
+              AttributeType: S
+            - AttributeName: gsi2sk
+              AttributeType: S
+          KeySchema:
+            - AttributeName: pk
+              KeyType: HASH
+            - AttributeName: sk
+              KeyType: RANGE
+          GlobalSecondaryIndexes:
+            - IndexName: gsi1
+              ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+              KeySchema:
+                - AttributeName: gsi1pk
+                  KeyType: HASH
+                - AttributeName: gsi1sk
+                  KeyType: RANGE
+              Projection:
+                ProjectionType: ALL
+            - IndexName: gsi2
+              ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+              KeySchema:
+                - AttributeName: gsi2pk
+                  KeyType: HASH
+                - AttributeName: gsi2sk
+                  KeyType: RANGE
+              Projection:
+                ProjectionType: ALL
+          Tags:
+            - Key: ResourceGroup
+              Value: ${self:custom.tags.ResourceGroup}
+            - Key: Name
+              Value: ${self:custom.codename}-${self:service}-AllItems1
+            - Key: Application
+              Value: ${self:custom.tags.Application}
+            - Key: ApplicationVersion
+              Value: ${self:custom.tags.ApplicationVersion}
+            - Key: ApplicationRole
+              Value: ${self:custom.tags.ApplicationRole}
+            - Key: Service
+              Value: ${self:custom.tags.Service}
+            - Key: Customer
+              Value: ${self:custom.tags.Customer}
+            - Key: Environment
+              Value: ${self:custom.stage}
+            - Key: InfrastructureVersion
+              Value: ${self:custom.tags.InfrastructureVersion}
+            - Key: ProjectCostCenter
+              Value: ${self:custom.tags.ProjectCostCenter}
+            - Key: OperatingCostCenter
+              Value: ${self:custom.tags.OperatingCostCenter}
+            - Key: Owner
+              Value: ${self:custom.tags.Owner}
+            - Key: SecurityContact
+              Value: ${self:custom.tags.SecurityContact}
+            - Key: Confidentiality
+              Value: ${self:custom.tags.Confidentiality}
+            - Key: Compliance
+              Value: ${self:custom.tags.Compliance}
+            - Key: AutomateOption
+              Value: ${self:custom.tags.AutomateOption}
+            - Key: AutomateAt
+              Value: ${self:custom.tags.AutomateAt}
+
+  - Outputs:
+      PBMAPILambdaFuncARN:
+        Value:
+          Fn::GetAtt: PBMAPILambdaFunction.Arn
+        Export:
+          Name:
+            Fn::Join: [":", [Ref: AWS::StackName, "${self:custom.stage}", PBMAPILambdaFuncARN]]
+
+      DynamoDBTableARN:
+        Value:
+          Fn::GetAtt: DynamoDBTable.Arn
+        Export:
+          Name:
+            Fn::Join: [":", [Ref: AWS::StackName, "${self:custom.stage}", DynamoDBTableARN]]

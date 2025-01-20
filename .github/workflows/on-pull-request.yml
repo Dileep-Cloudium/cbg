@@ -1,0 +1,160 @@
+# DESCRIPTION: On all pull requests, install dependencies, execute unit tests, apply linting,
+# build solution without deploying, and notifiy ChatOps channels. No areas of
+# code are ignored, all patterns monitored for changes.
+
+name: CI / On pull request
+on: [pull_request]
+
+jobs:
+  buildAndTest:
+    name: Build and test
+
+    # Custom runner based on ubuntu-latest.
+    runs-on: CBGCore-HighCharity-GitHubRunner01
+
+    environment: >-
+      ${{
+        github.base_ref == 'main' && 'Arcadia Prod' ||
+        github.base_ref == 'develop' && 'Arcadia Test' ||
+        'Arcadia Develop'
+      }}
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+        go-version: [1.23.x]
+
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        env:
+          ARCADIA_DEVELOP_AWS_KEY: ${{ secrets.ARCADIA_DEVELOP_AWS_KEY }}
+          ARCADIA_DEVELOP_AWS_SECRET: ${{ secrets.ARCADIA_DEVELOP_AWS_SECRET }}
+
+          ARCADIA_TEST_AWS_KEY: ${{ secrets.ARCADIA_TEST_AWS_KEY }}
+          ARCADIA_TEST_AWS_SECRET: ${{ secrets.ARCADIA_TEST_AWS_SECRET }}
+
+          ARCADIA_PROD_AWS_KEY: ${{ secrets.ARCADIA_PROD_AWS_KEY }}
+          ARCADIA_PROD_AWS_SECRET: ${{ secrets.ARCADIA_PROD_AWS_SECRET }}
+        run: |
+          mkdir ~/.aws && touch ~/.aws/credentials
+          cat <<EOL >> ~/.aws/credentials
+          [default]
+          aws_access_key_id=nil
+          aws_secret_access_key=nil
+
+          [arcadia-develop]
+          aws_access_key_id=$ARCADIA_DEVELOP_AWS_KEY
+          aws_secret_access_key=$ARCADIA_DEVELOP_AWS_SECRET
+
+          [arcadia-test]
+          aws_access_key_id=$ARCADIA_TEST_AWS_KEY
+          aws_secret_access_key=$ARCADIA_TEST_AWS_SECRET
+
+          [arcadia-prod]
+          aws_access_key_id=$ARCADIA_PROD_AWS_KEY
+          aws_secret_access_key=$ARCADIA_PROD_AWS_SECRET
+          EOL
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Cache node dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Use Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+
+      - name: Cache Go dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Install Go dependencies
+        run: make upgrade
+
+      - name: Run Go unit tests
+        env:
+          AWS_PROFILE: ${{ vars.CBG_ACCOUNT_SET }}-${{ vars.CBG_ENVIRONMENT }}
+          DYNAMODB_TABLE_NAME: ${{ vars.DYNAMODB_TABLE_NAME }}
+        run: make test
+
+      - name: Notify Slack
+        if: always()
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            text: >-
+              ${{ job.status == 'success' &&
+                  ':white_check_mark: PR validation passed' ||
+                  ':x: PR validation failed'
+              }} for ${{ github.repository }} - ${{ github.event.pull_request.html_url }}
+            blocks:
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: >-
+                    ${{ job.status == 'success' &&
+                        ':white_check_mark: PR validation passed' ||
+                        ':x: PR validation failed'
+                    }} for ${{ github.repository }} - ${{ github.event.pull_request.html_url }}
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: >-
+                    ${{ job.status == 'success' &&
+                        'Unit tests have passed. This PR is ready for review and merge.' ||
+                        'Unit tests have failed. Please check the GitHub Actions logs for details.'
+                    }}
+
+  automated-api-tests:
+    runs-on: ubuntu-latest
+    name: Automated API Tests
+    steps:
+      # Check out the repository code
+      - uses: actions/checkout@v4
+      
+      # Install Postman CLI
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+      
+      # Login to Postman CLI using API Key
+      - name: Login to Postman CLI
+        env:
+        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+      
+      # Run API tests for develop branch
+      - name: Run API tests (develop)
+        if: github.base_ref == 'develop'
+        run: |
+          postman collection run "9935851-66c4bece-9c74-47db-9c1e-b396a19e0438" -e "9935851-60d29994-d33f-416a-b366-2c576963a2f3"
+      
+      # Run API tests for main branch
+      - name: Run API tests (main)
+        if: github.base_ref == 'main'
+        run: |
+          postman collection run "9935851-66c4bece-9c74-47db-9c1e-b396a19e0438" -e "9935851-60d29994-d33f-416a-b366-2c576963a2f3"

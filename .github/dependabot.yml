@@ -1,0 +1,108 @@
+version: 2
+updates:
+
+  # Configuration for npm 'develop' branch
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: wednesday
+      time: "03:00"
+      timezone: Etc/UTC
+    target-branch: develop
+    assignees:
+      - fireteamrestricted-cbg
+    reviewers:
+      - fireteamrestricted-cbg
+    commit-message:
+      prefix: npm
+      include: scope
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "-"
+    labels:
+      - npm
+      - dependencies
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    versioning-strategy: auto
+
+  # Configuration for npm 'main' branch
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: wednesday
+      time: "03:00"
+      timezone: Etc/UTC
+    target-branch: main
+    assignees:
+      - fireteamrestricted-cbg
+    reviewers:
+      - fireteamrestricted-cbg
+    commit-message:
+      prefix: npm
+      include: scope
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "-"
+    labels:
+      - npm
+      - dependencies
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    versioning-strategy: auto
+
+  # Configuration for Go 'develop' branch
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+      day: wednesday
+      time: "03:00"
+      timezone: Etc/UTC
+    target-branch: develop
+    assignees:
+      - fireteamrestricted-cbg
+    reviewers:
+      - fireteamrestricted-cbg
+    commit-message:
+      prefix: go
+      include: scope
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "-"
+    labels:
+      - go
+      - dependencies
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # Configuration for Go 'main' branch
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+      day: wednesday
+      time: "03:00"
+      timezone: Etc/UTC
+    target-branch: main
+    assignees:
+      - fireteamrestricted-cbg
+    reviewers:
+      - fireteamrestricted-cbg
+    commit-message:
+      prefix: go
+      include: scope
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "-"
+    labels:
+      - go
+      - dependencies
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]

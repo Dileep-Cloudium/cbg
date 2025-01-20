@@ -1,0 +1,326 @@
+definitions:
+  request.AddUserRequest:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+    required:
+    - first_name
+    - last_name
+    - password
+    type: object
+  request.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - password
+    type: object
+  request.RegisterRequest:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+    required:
+    - first_name
+    - last_name
+    - password
+    type: object
+  request.UpdateUserRequest:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+    type: object
+  response.CommonResponse:
+    properties:
+      created_at:
+        type: string
+      item_body:
+        type: string
+      pk:
+        type: string
+      sk:
+        type: string
+    type: object
+  response.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  response.SingleUserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.CommonResponse'
+      status:
+        type: string
+    type: object
+  response.UsersListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.CommonResponse'
+        type: array
+      status:
+        type: string
+    type: object
+  response.APIResponse:
+    properties:
+      data: {}
+      status:
+        type: string
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: |-
+    This is for the NexusGate PBM API.
+    This solution is intended to act as a collection of CBG services that support the CBG PBM APIs.
+  termsOfService: http://swagger.io/terms/
+  title: nexusgate-pbmapi
+  version: "1.0"
+paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Validate the username and generate a token.
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Validate user and token generation
+      tags:
+      - Auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: A user will be registered for authentication.
+      parameters:
+      - description: Register request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: User Registration
+      tags:
+      - Auth
+  /api/v1/health:
+    get:
+      consumes:
+      - application/json
+      description: Check the health of the service.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Health check response
+          schema:
+            properties:
+              status:
+                type: string
+            type: object
+      summary: Health check
+      tags:
+      - Default
+  /api/v1/public/states:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the list of all states from the system.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get list of states
+      tags:
+      - Public
+  /api/v1/user:
+    post:
+      consumes:
+      - application/json
+      description: Add a new user with the provided details.
+      parameters:
+      - description: User Details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+      security:
+      - JWT: []
+      summary: Add a new user
+      tags:
+      - Users
+  /api/v1/user/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user from the system using the secondary key (sk).
+      parameters:
+      - description: Secondary Key (sk) of the user
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+      security:
+      - JWT: []
+      summary: Delete a user
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      description: Retrieve user details using the secondary key (sk).
+      parameters:
+      - description: Secondary Key (sk) of the user
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SingleUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - JWT: []
+      summary: Get a single user
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update the details of a user identified by the secondary key (sk).
+      parameters:
+      - description: Secondary Key (sk) of the user
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update User Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+      security:
+      - JWT: []
+      summary: Update a user's information
+      tags:
+      - Users
+  /api/v1/user/list:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the list of all users from the system.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UsersListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - JWT: []
+      summary: Get list of users
+      tags:
+      - Users
+securityDefinitions:
+  JWT:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

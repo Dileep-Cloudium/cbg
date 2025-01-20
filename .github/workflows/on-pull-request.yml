@@ -144,7 +144,6 @@ jobs:
       
       # Login to Postman CLI using API Key
       - name: Login to Postman CLI
-        env:
         run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
       
       # Run API tests for develop branch

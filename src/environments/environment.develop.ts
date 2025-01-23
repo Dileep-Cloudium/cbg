@@ -1,6 +1,7 @@
 export const environment = {
     name: "DEV",
     production: false,
+    baseURL: "http://localhost:3000/",
     cognito: {
       userPoolId: "us-west-2_fniaT8ZpQ",
       userPoolClientId: "1kie4209as0m4ss8ecfmc28fde",

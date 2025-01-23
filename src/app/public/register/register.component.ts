@@ -32,7 +32,6 @@ import { TextBoxModule } from '@syncfusion/ej2-angular-inputs';
 })
 
 export class RegisterComponent {
-
   /**
    * Flag indicating whether the registration process is confirmed
    */
@@ -106,35 +105,76 @@ export class RegisterComponent {
   createUser() {
     if (this.signUpForm.valid) {
       this.appService.isLoading = true;
-      const obj: UserAWSRegistrationModel = this.signUpForm.value;
-      // Currently iserting with default value
-      obj.profileId = "b551df1a-6424-419e-8524-ae149858b8b0";
-      this.publicService.signUp(obj)
-        .then((resp: SignUpOutput) => {
-          this.appService.isLoading = false;
-          this.appService.openToaster("success", "Registration successful. You may login now.")
-          this.navigate('login');
-        }).catch((err) => {
-          this.appService.isLoading = false;
-          this.appService.openToaster("error", err.message)
-        });
+      const obj: UserRegistrationModel = {
+        first_name: this.signUpForm.value.firstName,
+        last_name: this.signUpForm.value.lastName,
+        email: this.signUpForm.value.email
+      }
+      this.publicService.register(obj).subscribe((data: ResponseModel) => {
+        this.appService.isLoading = false;
+        this.signUp(data)
+      }, error => {
+        this.appService.openToaster("error", "data" in error.error ? error.error.data[0] : "Failed to load response data");
+        this.appService.isLoading = false;
+      });
     }
+  }
+
+  /**
+   * After successfull insertion in DB, register the user in AWS user pool with 
+   * profile_id genereated from application database
+   * @param data - ResponseModel
+   */
+  signUp(data: ResponseModel) {
+    this.appService.isLoading = true;
+    const obj: UserAWSRegistrationModel = this.signUpForm.value;
+    // Currently iserting with default value
+    obj.profileId = data.data?.profile_id;
+    this.publicService.signUp(obj)
+      .then((resp: SignUpOutput) => {
+        this.appService.isLoading = false;
+        this.updateUser(data, resp);
+      }).catch((err) => {
+        this.appService.isLoading = false;
+        this.appService.openToaster("error", err.message)
+      });
+  }
+
+  /**
+   * After user creation in AWS user pool, get the AWS user id
+   * and update in application DB
+   * @param userData - Application DB record
+   * @param awsUserData - AWS user record
+   */
+  updateUser(userData: ResponseModel, awsUserData: SignUpOutput) {
+    this.appService.isLoading = true;
+    const obj: UserAWSUpdateModel = {
+      aws_cognito_user_id: awsUserData.userId,
+      id: userData.data.user_id
+    }
+    this.publicService.updateAwsUserId(obj).subscribe((data: ResponseModel) => {
+      console.log(data);
+      this.appService.isLoading = false;
+      this.isConfirm = true;
+    }, error => {
+      this.appService.openToaster("error", "data" in error.error ? error.error.detail[0] : "Failed to load response data");
+    });
   }
 
   /**
    * To confirm the user email, need to submit the code which was received
    */
   confirmSignUp() {
-    // this.appService.isLoading = true;
-    // this.publicService.confirmSignUp(this.signUpForm.value.email, this.signUpForm.value.code)
-    //   .then(() => {
-    //     this.appService.isLoading = false
-    //     // this.appService.openToaster("success", "Registration successful. You may login now.")
-    //     this.router.navigate(['login']);
-    //   }).catch((e) => {
-    //     this.appService.isLoading = false;
-    //     // this.appService.openToaster("error", e.message)
-    //   });
+    this.appService.isLoading = true;
+    this.publicService.confirmSignUp(this.signUpForm.value.email, this.signUpForm.value.code)
+      .then(() => {
+        this.appService.isLoading = false
+        this.appService.openToaster("success", "Registration successful. You may login now.")
+        this.router.navigate(['login']);
+      }).catch((e) => {
+        this.appService.isLoading = false;
+        this.appService.openToaster("error", e.message)
+      });
   }
 
   /**
@@ -142,6 +182,7 @@ export class RegisterComponent {
    * @param val - path
    */
   navigate(val: string) {
+    // this.tooltip.opensOn = "Auto"
     this.router.navigate([val]);
   }
 

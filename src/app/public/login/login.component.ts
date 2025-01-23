@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
 import { MaskedTextBoxModule, TextBoxModule } from '@syncfusion/ej2-angular-inputs';
 import { PublicService } from '../public.service';
 import { ButtonModule } from '@syncfusion/ej2-angular-buttons';
@@ -22,7 +21,6 @@ import { environment } from '../../../environments/environment.develop';
     ReactiveFormsModule,
     RouterModule,
     ButtonModule,
-    HttpClientModule,
     TextBoxModule,
     DialogModule,
     MaskedTextBoxModule,

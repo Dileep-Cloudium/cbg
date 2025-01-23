@@ -1,0 +1,27 @@
+.e-mask-container .e-input-group {
+    width: 362px;
+    padding: 10px 7px;
+}
+
+.e-mask-container .e-input-group input {
+    letter-spacing: 5px;
+}
+
+.cbg-login-success ::ng-deep .e-dlg-content {
+    border-radius: 15px;
+}
+
+.cbg-trans-mfa {
+    animation-name: slide;
+    animation-duration: 1s;
+}
+
+@keyframes slide {
+    from {
+        transform: translate3d(100%, 0, 0);
+    }
+
+    to {
+        transform: none;
+    }
+}

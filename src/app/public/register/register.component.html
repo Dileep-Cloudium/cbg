@@ -1,0 +1,133 @@
+<ejs-tooltip #tooltip id='tooltip' target='.e-info' position='RightCenter' opensOn="Click">
+    <div class="flex justify-center items-center h-[calc(100vh-90px)]">
+        <div class="font-AvantGardEF-Book bg-white w-[568px] px-[50px] py-[50px] rounded-[20px] mt-[-90px]">
+            <h1 *ngIf="!isConfirm" class="text-center text-[40px] text-fontBlack font-AvantGardEF-Bold">Register</h1>
+            <h1 *ngIf="isConfirm" class="text-center text-[40px] text-fontBlack font-AvantGardEF-Book">Confirmation</h1>
+            <!-- <p class="text-[14px] mt-3 mb-6 text-[#202020] text-center">Lorem ipsum dolor sit amet, consectetur
+                adipiscing
+                elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p> -->
+
+            <form [formGroup]="signUpForm">
+                <div class="card">
+                    <div class="row" *ngIf="!isConfirm">
+                        <div class="form-group template cbg-field-required">
+                            <ejs-textbox placeholder="First Name" cssClass="e-float-input" formControlName="firstName"
+                                floatLabelType="Auto"></ejs-textbox>
+                            <div *ngIf="isFieldValid('firstName') "
+                                class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
+                                <div *ngIf="signUpForm.get('firstName')?.hasError('required')">First name is
+                                    required</div>
+                                <div *ngIf="signUpForm.get('firstName')?.hasError('minlength')">Minimum 3 characters
+                                    required</div>
+                                <div *ngIf="signUpForm.get('firstName')?.hasError('maxlength')">Maximum 100
+                                    characters</div>
+                                <div *ngIf="signUpForm.get('firstName')?.hasError('pattern')">First name should only
+                                    contain alphabets </div>
+                            </div>
+                        </div>
+                        <div class="form-group template cbg-field-required">
+                            <ejs-textbox placeholder="Last Name" cssClass="e-float-input" formControlName="lastName"
+                                floatLabelType="Auto"></ejs-textbox>
+                            <div *ngIf="isFieldValid('lastName')"
+                                class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
+                                <div *ngIf="signUpForm.get('lastName')?.hasError('required')">Last name is required
+                                </div>
+                                <div *ngIf="signUpForm.get('lastName')?.hasError('minlength')">Minimum 3 characters
+                                    required</div>
+                                <div *ngIf="signUpForm.get('lastName')?.hasError('maxlength')">Maximum 100
+                                    characters</div>
+                                <div *ngIf="signUpForm.get('lastName')?.hasError('pattern')">Last name should only
+                                    contain
+                                    alphabets </div>
+                            </div>
+                        </div>
+                        <div class="form-group template cbg-field-required">
+
+                            <ejs-textbox placeholder="Email" cssClass="e-float-input" formControlName="email"
+                                floatLabelType="Auto"></ejs-textbox>
+                            <div *ngIf="isFieldValid('email')"
+                                class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
+                                <div *ngIf="signUpForm.get('email')?.hasError('required')">Email is required</div>
+                                <div *ngIf="signUpForm.get('email')?.hasError('email')">Invalid email format</div>
+                            </div>
+                        </div>
+                        <div class="form-group template relative cbg-field-required">
+
+                            <ejs-textbox [type]="showButton ? 'text' : 'password'" placeholder="Password"
+                                cssClass="e-float-input e-info" formControlName="password"
+                                floatLabelType="Auto"></ejs-textbox>
+                            <ng-template #content>
+                                <div class="text-[black] border-none pb-[15px]">Password must
+                                    <ul>
+                                        <li class="my-[18px]"><span
+                                                [ngClass]="signUpForm.controls['password'].value?.match('(.*[0-9].*)') ? 'bg-[#95CD68]' : 'bg-[#D9D9D9]'"
+                                                class="inline-flex w-2 h-2 rounded-3xl mr-2"></span>
+                                            Have One number</li>
+                                        <li class="mb-[18px]"><span class="inline-flex w-2 h-2 rounded-3xl mr-2"
+                                                [ngClass]="signUpForm.controls['password'].value?.match('^(?=.*[A-Z])') ? 'bg-[#95CD68]' : 'bg-[#D9D9D9]'"></span>Have
+                                            One uppercase character</li>
+                                        <li class="mb-[18px]"><span class="inline-flex w-2 h-2 rounded-3xl mr-2"
+                                                [ngClass]="signUpForm.controls['password'].value?.match('(?=.*[a-z])') ? 'bg-[#95CD68]' : 'bg-[#D9D9D9]'"></span>Have
+                                            One lowercase character</li>
+                                        <li class="mb-[18px]"><span class="inline-flex w-2 h-2 rounded-3xl mr-2"
+                                                [ngClass]="signUpForm.controls['password'].value?.match('(?=.*[!@#$%^&*])') ? 'bg-[#95CD68]' : 'bg-[#D9D9D9]'"></span>Have
+                                            One special character</li>
+                                        <li><span class="inline-flex w-2 h-2 rounded-3xl mr-2"
+                                                [ngClass]="signUpForm.controls['password'].value?.match('.{14,}') ? 'bg-[#95CD68]' : 'bg-[#D9D9D9]'"></span>Have
+                                            minimum 14 characters</li>
+                                    </ul>
+                                </div>
+                            </ng-template>
+                            <span class="inline-grid float-right absolute top-11 right-3 cursor-pointer">
+                                <i class="float-right" [class]="showEye ? 'fa fa-eye' : 'fa fa-eye-slash'"
+                                    (click)="showPassword()"></i>
+                            </span>
+                            <div *ngIf="isFieldValid('password')"
+                                class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
+                                <div *ngIf="signUpForm.get('password')?.hasError('required')">Password is required
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="!isConfirm">
+                        <div class="mt-8 mb-5 text-center rounded-[5px]">
+                            <button
+                                class=" w-full  text-base py-3 text-[#FFFFFF] bg-[#7DAFAA40] border-none cursor-pointer font-bold font-AvantGardEF-Bold"
+                                [ngClass]="{'bg-[#7DAFAA]' : signUpForm.valid}" ejs-button cssClass="e-success"
+                                (click)="createUser()"
+                                [disabled]="appService.isLoading || signUpForm.invalid">Submit</button>
+                        </div>
+                    </div>
+                    <div *ngIf="!isConfirm" class="my-4 text-center text-[14px] text-[#202020]">You have already
+                        registered? <span class="text-[#7DAFAA] cursor-pointer underline font-bold"
+                            (click)="navigate('login')">Login</span>
+                    </div>
+                    <div class="card-body text-center" *ngIf="isConfirm">
+                        <label class="font-AvantGardEF-Book text-sm leading-8"> Register confirmation code sent to your
+                            registered email. <br>
+                            Please check your email</label>
+                        <div class="form-group mt-8">
+                            <ejs-maskedtextbox class="text-3xl" id="code" name="code" formControlName="code"
+                                mask="0   0   0   0   0   0"></ejs-maskedtextbox>
+                            <!-- <div class="e-float-input" [ngClass]="{'e-success': signUpForm.controls['code'].valid}">
+                                    <input type="text" id="code" name="code" class="required" formControlName="code"
+                                        required>
+                                    <span class="e-float-line"></span>
+                                    <label class="e-float-text" for="email">Code</label>
+                                </div> -->
+                            <div *ngIf="isFieldValid('code')" class="e-error">Code is required</div>
+                        </div>
+                        <div class="row">
+                            <div class="mt-8 mb-5 text-center rounded-[5px]">
+                                <button
+                                    class=" w-96 rounded-[5px] text-base py-3 text-[#FFFFFF] bg-[#7DAFAA] border-none cursor-pointer font-bold font-AvantGardEF-Bold"
+                                    (click)="confirmSignUp()" [disabled]="appService.isLoading">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</ejs-tooltip>

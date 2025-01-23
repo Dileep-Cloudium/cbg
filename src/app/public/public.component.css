@@ -1,0 +1,37 @@
+.content {
+    min-height: calc(100vh - 120px);
+    padding: 20px;
+}
+
+.e-footer {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+.e-footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.e-footer-right a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #666;
+}
+
+.e-footer-right a:hover {
+    color: #333;
+}
+
+.nav-center {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+}

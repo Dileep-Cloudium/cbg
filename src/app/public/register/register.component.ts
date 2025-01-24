@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PublicService } from '../public.service';
@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from '@syncfusion/ej2-angular-buttons';
-import { TextBoxModule } from '@syncfusion/ej2-angular-inputs';
+import { MaskedTextBoxModule, TextBoxModule } from '@syncfusion/ej2-angular-inputs';
 
 /**
  * Component responsible for handling register related functionality
@@ -27,7 +27,8 @@ import { TextBoxModule } from '@syncfusion/ej2-angular-inputs';
     RouterModule,
     ButtonModule,
     TextBoxModule,
-    TooltipModule
+    TooltipModule,
+    MaskedTextBoxModule 
   ],
 })
 
@@ -58,6 +59,12 @@ export class RegisterComponent {
   @ViewChild('tooltip')
   public tooltip!: TooltipComponent;
 
+  
+  /**
+   * Output event for action
+   */
+  @Output() action = new EventEmitter();
+  
   /**
    * Injecting dependencies
    * @param router - router for navigation
@@ -129,7 +136,8 @@ export class RegisterComponent {
     this.appService.isLoading = true;
     const obj: UserAWSRegistrationModel = this.signUpForm.value;
     // Currently iserting with default value
-    obj.profileId = data.data?.profile_id;
+    obj.profileId = data.data?.id?.replace("user#", "");
+    obj.type = "M";
     this.publicService.signUp(obj)
       .then((resp: SignUpOutput) => {
         this.appService.isLoading = false;
@@ -150,10 +158,9 @@ export class RegisterComponent {
     this.appService.isLoading = true;
     const obj: UserAWSUpdateModel = {
       aws_cognito_user_id: awsUserData.userId,
-      id: userData.data.user_id
+      profile_id: userData.data?.id?.replace("user#", "")
     }
     this.publicService.updateAwsUserId(obj).subscribe((data: ResponseModel) => {
-      console.log(data);
       this.appService.isLoading = false;
       this.isConfirm = true;
     }, error => {
@@ -170,7 +177,7 @@ export class RegisterComponent {
       .then(() => {
         this.appService.isLoading = false
         this.appService.openToaster("success", "Registration successful. You may login now.")
-        this.router.navigate(['login']);
+        this.action.emit('login');
       }).catch((e) => {
         this.appService.isLoading = false;
         this.appService.openToaster("error", e.message)
@@ -184,6 +191,11 @@ export class RegisterComponent {
   navigate(val: string) {
     // this.tooltip.opensOn = "Auto"
     this.router.navigate([val]);
+  }
+
+
+  outputAction(val: any) {
+    this.action.emit(val);
   }
 
   /**

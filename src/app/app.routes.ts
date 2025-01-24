@@ -9,11 +9,10 @@ export const routes: Routes = [
     },
     {
       path: '',
-      loadChildren: () =>
-        import('./public/public.routes').then(m => m.routes),
+      loadChildren: () => import('./public/public.routes').then(m => m.routes),
     },
     {
       path: '**',
       redirectTo: '',
     },
-  ];
+  ]; 

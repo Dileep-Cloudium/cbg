@@ -1,18 +1,32 @@
-<div class="public-container">
-    <ejs-appbar colorMode="Primary">
-        <!-- <div class="e-appbar-spacer"></div> -->
-        <div class="nav-center">
-            <button ejs-button cssClass="e-inherit"  (click)="navigate('dashboard')">Dashboard</button>
-            <button ejs-button cssClass="e-inherit"  (click)="navigate('policy')">Policy</button>
+<div class="public-container relative">
+    <div class="flex justify-between items-center bg-[#FF6900] py-4 px-4 fixed top-0 right-0 left-0">
+        <div class="logo">
+            <img src="../../assests/images/member_portal_logo.png" alt="logo" class="w-[100px]">
         </div>
-        <div class="e-appbar-spacer"></div>
-        <button ejs-button cssClass="e-primary" (click)="navigate('login')">Login</button>
-    </ejs-appbar>
-    
-    <div class="content">
-        <router-outlet></router-outlet>
+        <div class="nav-links">
+            <button ejs-button cssClass="e-inherit"  (click)="navigate('public/pharmacies')">PHARMACIES</button>
+            <button ejs-button cssClass="e-inherit"  (click)="navigate('public/policy')">POLICIES</button>
+            <button ejs-button cssClass="e-inherit"  (click)="navigate('public/request-pa')">REQUEST PA</button>
+        </div>
+        <div class="login-button">
+            <button ejs-button class="e-control e-btn" id="targetButton" (click)="showDialog('login')">Login</button>
+        </div>
     </div>
-        
+    
+    <div class="content flex  justify-center items-center">
+        <router-outlet></router-outlet>
+        <ejs-dialog id='dialog' #ejDialog target=".content" [visible]="false" [showCloseIcon]='true'
+            width='400px' class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <ng-template #content>
+                <div *ngIf="displayComponent == 'login'">
+                    <app-login (action)="showDialog($event)" (close)="closeDialog($event)"></app-login>
+                </div>
+                <div *ngIf="displayComponent == 'register'">
+                    <app-register (action)="showDialog($event)"></app-register>
+                </div>
+            </ng-template>
+        </ejs-dialog>
+    </div>
     <footer class="e-footer">
         <div class="e-footer-content">
             <div class="e-footer-left">

@@ -2,11 +2,13 @@
     <ejs-appbar colorMode="Primary">
         <!-- <div class="e-appbar-spacer"></div> -->
         <div class="nav-center">
-            <button ejs-button cssClass="e-inherit">Home</button>
-            <button ejs-button cssClass="e-inherit" [routerLink]="['/policy']">Policy</button>
-            <button ejs-button cssClass="e-inherit" [routerLink]="['/policy']">Users</button>
+            <button ejs-button cssClass="e-inherit" (click)="navigate('rx-claims')">RX CLAIMS</button>
+            <button ejs-button cssClass="e-inherit" (click)="navigate('benefits')">BENIFITS</button>
+            <button ejs-button cssClass="e-inherit" (click)="navigate('pharmacies')">PHARMACIES</button>
+            <button ejs-button cssClass="e-inherit" (click)="navigate('policy')">POLICIES</button>
+            <button ejs-button cssClass="e-inherit" (click)="navigate('request-pa')">REQUEST PA</button>
         </div>
-        <button ejs-button cssClass="e-primary" (click)="signOut()">Login</button>
+        <button ejs-button cssClass="e-primary" (click)="signOut()">Logout</button>
     </ejs-appbar>
     
     <div class="content">

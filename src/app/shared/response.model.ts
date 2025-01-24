@@ -68,6 +68,11 @@ export interface UserAWSRegistrationModel {
      * Custom attribute: To store the application generated user id
      */
     profileId: string
+
+    /**
+     * Custom attribute: To store the application generated user id
+     */
+    type: string
 }
 
 /**
@@ -78,7 +83,7 @@ export interface UserAWSUpdateModel {
     /**
      * user_id of user to be updated
      */
-    id: number,
+    profile_id: string,
 
     /**
      * AWS cognito user id generated in user pool

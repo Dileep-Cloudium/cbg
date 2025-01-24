@@ -1,8 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, NavigationError, NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { AppService } from './app.service';
 import { ToasterComponent } from './shared/toaster/toaster.component';
 import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -18,8 +19,9 @@ export class AppComponent {
  */
   @ViewChild('Toaster') public toasterComponent!: ToasterComponent;
 
-  constructor(public appService: AppService) { }
-
+  // constructor(public appService: AppService) { }
+  constructor(public appService: AppService) {
+  }
   ngOnInit() {
     console.log('AppComponent ngOnInit');
     this.appService.openToasterEmit.subscribe(() => {

@@ -14,14 +14,23 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class ProtectedComponent {
 
-  constructor(private protectedService:ProtectedService,private cookieService:CookieService,private appService:AppService,private router:Router){}
+  constructor(private protectedService:ProtectedService,private cookieService:CookieService,private appService:AppService,private router:Router){
+    console.log('protected component constructor');
+  }
   
+  
+  navigate(path: string) {
+    console.log('navigate', path);
+    
+    this.router.navigate([path]);
+  }
+
   signOut(){
     this.appService.handleSignOut().then(() => {
       this.cookieService.deleteAll("/");
       this.appService.isLoggedIn = false;
       this.appService.isLoading = false;
-      this.router.navigate(['login']);
+      this.router.navigate(['public']);
     })
   }
 }

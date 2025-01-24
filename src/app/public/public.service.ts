@@ -46,7 +46,8 @@ export class PublicService {
           "email": user.email,
           "given_name": user.firstName,
           "family_name": user.lastName,
-          "custom:profile_id": user.profileId
+          "custom:profile_id": user.profileId,
+          "custom:type": user.type
         }
       }
     });
@@ -93,7 +94,7 @@ export class PublicService {
    * @param data - User details with name and email
    */
   register(data: UserRegistrationModel) {
-    const url = environment.baseURL + 'user/register';
+    const url = environment.baseURL + 'portal-api/auth/register';
     return this.http.post<ResponseModel>(url, data)
       .pipe(map((response: ResponseModel) => {
         return response;
@@ -105,7 +106,7 @@ export class PublicService {
    * @param data - User details with id and AWS User ID
    */
   updateAwsUserId(data: UserAWSUpdateModel) {
-    const url = environment.baseURL + 'user/cognito_id';
+    const url = environment.baseURL + 'portal-api/auth/cognito-id';
     return this.http.put<ResponseModel>(url, data)
       .pipe(map((response: ResponseModel) => {
         return response;

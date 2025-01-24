@@ -1,0 +1,6 @@
+.landing-bg {
+    background-image: url('../../../assests/images/landing-bg.png');
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+}

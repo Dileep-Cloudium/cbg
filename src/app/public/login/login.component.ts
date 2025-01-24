@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MaskedTextBoxModule, TextBoxModule } from '@syncfusion/ej2-angular-inputs';
@@ -36,8 +36,18 @@ export class LoginComponent implements OnInit {
   /**
    * Reference to DialogComponent
    */
-  @ViewChild('Dialog')
-  public totpDialog: DialogComponent | undefined;
+  // @ViewChild('Dialog')
+  // public totpDialog: DialogComponent | undefined;
+
+  /**
+  * Emitted when a row radio button is selected
+  */
+  @Output() action = new EventEmitter();
+
+  /**
+   * Emitted when the dialog is closed
+   */
+  @Output() close = new EventEmitter();
 
   /**
    * Form group for login form
@@ -115,12 +125,12 @@ export class LoginComponent implements OnInit {
     });
 
     // Check whether the user logged in or not
-    // this.appService.getCurrentUser().then((resp: AuthUser) => {
-    //   if ("userId" in resp) {
-    //     console.log(resp, "resp")
-    //     this.loginSuccess(resp)
-    //   }
-    // })
+    this.appService.getCurrentUser().then((resp: AuthUser) => {
+      if ("userId" in resp) {
+        console.log(resp, "resp")
+        this.loginSuccess(resp)
+      }
+    })
   }
 
   /**
@@ -163,12 +173,12 @@ export class LoginComponent implements OnInit {
             // You need to get the code from the UI inputs
             // and then trigger the following function with a button click
             this.showTotpPopup = true;
-            this.totpDialog?.show();
+            // this.totpDialog?.show();
             break;
           case 'CONFIRM_SIGN_IN_WITH_SMS_CODE':
             // If MFA is enabled, sign-in should be confirmed with the confirmation code
             this.showTotpPopup = true;
-            this.totpDialog?.show();
+            // this.totpDialog?.show();
             break;
           case 'CONFIRM_SIGN_UP':
             this.resendSignUpCode()
@@ -275,7 +285,6 @@ export class LoginComponent implements OnInit {
           }
         })
       }
-      this.totpDialog?.hide();
       this.showTotpPopup = false;
     }
   }
@@ -294,8 +303,8 @@ export class LoginComponent implements OnInit {
         this.cookieService.set('id_token', session?.idToken?.toString() ?? "", 1, "/");
         this.appService.isLoggedIn = true;
         this.appService.isLoading = false;
-
-        this.router.navigate(['/dashboard']);
+        
+        this.close.emit('rx-claims');
       }
       else {
         this.publicService.tokenAssociation(session.accessToken.toString()).then((resp: any) => {
@@ -318,6 +327,10 @@ export class LoginComponent implements OnInit {
    */
   navigate(val: string) {
     this.router.navigate([val]);
+  }
+
+  outputAction(val: any) {
+    this.action.emit(val);
   }
 
 }

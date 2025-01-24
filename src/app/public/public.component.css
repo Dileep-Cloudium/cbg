@@ -35,3 +35,12 @@
     align-items: center;
     justify-content: center;
 }
+
+.e-dialog .e-dlg-header-content {
+    border-bottom: none;
+  }
+
+  
+#dialog-container {
+    height: 500px;
+}

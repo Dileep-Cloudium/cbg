@@ -1,4 +1,4 @@
-<div class="public-container">
+<div class="protected-container">
     <ejs-appbar colorMode="Primary">
         <!-- <div class="e-appbar-spacer"></div> -->
         <div class="nav-center">
@@ -6,6 +6,7 @@
             <button ejs-button cssClass="e-inherit" [routerLink]="['/policy']">Policy</button>
             <button ejs-button cssClass="e-inherit" [routerLink]="['/policy']">Users</button>
         </div>
+        <button ejs-button cssClass="e-primary" (click)="signOut()">Login</button>
     </ejs-appbar>
     
     <div class="content">

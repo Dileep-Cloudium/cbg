@@ -11,9 +11,9 @@
                 <form [formGroup]="signUpForm">
                     <div class="card">
                         <div class="row" *ngIf="!isConfirm">
-                            <div class="form-group template cbg-field-required">
-                                <ejs-textbox placeholder="First Name" cssClass="e-float-input" formControlName="firstName"
-                                    floatLabelType="Auto"></ejs-textbox>
+                            <div class="mb-4">
+                                <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
+                                <ejs-textbox class="py-2 e-bigger"  formControlName="firstName" type="text" placeholder="First Name" floatLabelType="Never" role="textbox"></ejs-textbox>
                                 <div *ngIf="isFieldValid('firstName') "
                                     class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
                                     <div *ngIf="signUpForm.get('firstName')?.hasError('required')">First name is
@@ -26,11 +26,11 @@
                                         contain alphabets </div>
                                 </div>
                             </div>
-                            <div class="form-group template cbg-field-required">
-                                <ejs-textbox placeholder="Last Name" cssClass="e-float-input" formControlName="lastName"
-                                    floatLabelType="Auto"></ejs-textbox>
+                            <div class="mb-4">
+                                <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Last name</label>
+                                <ejs-textbox class="py-2 e-bigger"  formControlName="lastName" type="text" placeholder="Last name" floatLabelType="Never" role="textbox"></ejs-textbox>
                                 <div *ngIf="isFieldValid('lastName')"
-                                    class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
+                                class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
                                     <div *ngIf="signUpForm.get('lastName')?.hasError('required')">Last name is required
                                     </div>
                                     <div *ngIf="signUpForm.get('lastName')?.hasError('minlength')">Minimum 3 characters
@@ -42,21 +42,18 @@
                                         alphabets </div>
                                 </div>
                             </div>
-                            <div class="form-group template cbg-field-required">
-    
-                                <ejs-textbox placeholder="Email" cssClass="e-float-input" formControlName="email"
-                                    floatLabelType="Auto"></ejs-textbox>
+                            <div class="mb-4">
+                                <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                                <ejs-textbox class="py-2 e-bigger" type="email" placeholder="Email"  formControlName="email" floatLabelType="Never" aria-label="enter your email address" role="textbox"></ejs-textbox>
                                 <div *ngIf="isFieldValid('email')"
                                     class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
                                     <div *ngIf="signUpForm.get('email')?.hasError('required')">Email is required</div>
                                     <div *ngIf="signUpForm.get('email')?.hasError('email')">Invalid email format</div>
                                 </div>
                             </div>
-                            <div class="form-group template relative cbg-field-required">
-    
-                                <ejs-textbox [type]="showButton ? 'text' : 'password'" placeholder="Password"
-                                    cssClass="e-float-input e-info" formControlName="password"
-                                    floatLabelType="Auto"></ejs-textbox>
+                            <div class="mb-4 relative">
+                                <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                                <ejs-textbox class="py-2 e-bigger" formControlName="password" type="password" placeholder="Password" floatLabelType="Never" aria-label="enter your email password" role="textbox"></ejs-textbox>
                                 <ng-template #content>
                                     <div class="text-[black] border-none pb-[15px]">Password must
                                         <ul>

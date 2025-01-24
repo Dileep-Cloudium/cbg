@@ -4,12 +4,19 @@ import { ToasterModel, ToasterType, ToasterPositionX, ToasterPositionY } from '.
 import { environment } from '../environments/environment.develop';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { Amplify } from 'aws-amplify';
+import { CognitoIdentityProviderClient, GetUserCommand } from '@aws-sdk/client-cognito-identity-provider';
+import { signOut } from 'aws-amplify/auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppService {
   
+  /**
+   * AWS CognitoIdentityServiceProvider instance for managing user-related actions
+   */
+  private cognito!: CognitoIdentityProviderClient;
+
   /**
    * To show / hide loader icon
    */
@@ -38,8 +45,10 @@ export class AppService {
         Cognito: environment.cognito
       }
     });
+    this.cognito = new CognitoIdentityProviderClient({
+      region: "us-west-2"
+    });
    }
-
    
   /**
    * Opens the toaster and display the message
@@ -92,7 +101,19 @@ export class AppService {
     const params = {
       "AccessToken": token
     };
-    // return await this.cognito.send(new GetUserCommand(params));
+    return await this.cognito.send(new GetUserCommand(params));
   }
   
+    /**
+   * Handles the sign-out process, securely terminating the user's session and
+   * ensuring a clean logout from the application
+   * @returns 
+   */
+      async handleSignOut() {
+        return signOut().then((resp) => {
+          return resp;
+        }).catch((err) => {
+          return err;
+        });
+      }
 }

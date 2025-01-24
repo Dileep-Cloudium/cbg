@@ -10,6 +10,7 @@ import { ButtonPropsModel, DialogComponent, DialogModule } from '@syncfusion/ej2
 import { AuthTokens, AuthUser, SignInOutput } from 'aws-amplify/auth';
 import { QRCodeGeneratorAllModule } from '@syncfusion/ej2-angular-barcode-generator';
 import { environment } from '../../../environments/environment.develop';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-login',
@@ -92,7 +93,7 @@ export class LoginComponent implements OnInit {
    * @param formBuilder - Form Builder instance for login form
    * @param appService - Service for handling app related API
    */
-  constructor(private router: Router, private publicService: PublicService,
+  constructor(private router: Router, private publicService: PublicService, private cookieService: CookieService,
     private formBuilder: FormBuilder, public appService: AppService) {
     this.code = "";
     this.loginForm = this.formBuilder.group({
@@ -114,11 +115,12 @@ export class LoginComponent implements OnInit {
     });
 
     // Check whether the user logged in or not
-    this.appService.getCurrentUser().then((resp: AuthUser) => {
-      if ("userId" in resp) {
-        this.loginSuccess(resp)
-      }
-    })
+    // this.appService.getCurrentUser().then((resp: AuthUser) => {
+    //   if ("userId" in resp) {
+    //     console.log(resp, "resp")
+    //     this.loginSuccess(resp)
+    //   }
+    // })
   }
 
   /**
@@ -143,6 +145,7 @@ export class LoginComponent implements OnInit {
    */
   public signIn(): void {
     this.appService.isLoading = true;
+    console.log(this.loginForm.value, "loginForm")
     this.publicService.signIn(this.loginForm.value.email, this.loginForm.value.password)
       .then(async (resp: SignInOutput) => {
         this.appService.isLoading = false;
@@ -152,7 +155,7 @@ export class LoginComponent implements OnInit {
           case 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP':
             // This happens when the MFA method is TOTP
             // The user needs to setup the TOTP before using it
-            this.code = nextStep.totpSetupDetails.getSetupUri("SagePA" + ((environment.production === true) ? "" : `-${environment.name}`)).href;
+            this.code = nextStep.totpSetupDetails.getSetupUri("NexusgatePBM" + ((environment.production === true) ? "" : `-${environment.name}`)).href;
             this.code = this.code.replace(this.code.split(":")[2].slice(0, 36), this.loginForm.value.email);
             this.showMfaSetupPopup = true;
             break;
@@ -174,15 +177,16 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['forgot-password']);
           break;
           case 'DONE': {
-            const session: AuthTokens = await this.appService.getAuthTokens();
-            this.publicService.tokenAssociation(session.accessToken.toString()).then(async (resp: any) => {
-              this.code = `otpauth://totp/${this.loginForm.value.email}?secret=${resp.SecretCode}&issuer=SagePA-${environment.name}`;
-              this.showMfaSetupPopup = true;
-              this.isReset = true;
-            }).catch((e: { message: string | null | undefined; }) => {
-              this.appService.isLoading = false;
-              this.appService.openToaster("error", e.message);
-            });
+            this.navigate('dashboard')
+            // const session: AuthTokens = await this.appService.getAuthTokens();
+            // this.publicService.tokenAssociation(session.accessToken.toString()).then(async (resp: any) => {
+            //   this.code = `otpauth://totp/${this.loginForm.value.email}?secret=${resp.SecretCode}&issuer=SagePA-${environment.name}`;
+            //   this.showMfaSetupPopup = true;
+            //   this.isReset = true;
+            // }).catch((e: { message: string | null | undefined; }) => {
+            //   this.appService.isLoading = false;
+            //   this.appService.openToaster("error", e.message);
+            // });
           }
         }
       }).catch((e) => {
@@ -281,14 +285,13 @@ export class LoginComponent implements OnInit {
    * @param user - authenticated user details
    */
   async loginSuccess(user: AuthUser) {
+    console.log("loginSuccess")
     const session: AuthTokens = await this.appService.getAuthTokens();
-    this.appService.getUser(session.accessToken.toString()).then(async (userResp:any) => {
+    this.appService.getUser(session.accessToken.toString()).then(async (userResp) => {
+      console.log(userResp, "userResp")
       if ("UserMFASettingList" in userResp) {
-        // this.cookieService.set('access_token', session.accessToken.toString(), 1, "/");
-        // this.cookieService.set('id_token', session?.idToken?.toString() ?? "", 1, "/");
-        // this.cookieService.set('email', user?.signInDetails?.loginId ?? "", 1, "/");
-        // localStorage.setItem('email', user?.signInDetails?.loginId ?? "");
-        // this.cookieService.set('id', user.userId, 1, "/");
+        this.cookieService.set('access_token', session.accessToken.toString(), 1, "/");
+        this.cookieService.set('id_token', session?.idToken?.toString() ?? "", 1, "/");
         this.appService.isLoggedIn = true;
         this.appService.isLoading = false;
 
@@ -296,7 +299,7 @@ export class LoginComponent implements OnInit {
       }
       else {
         this.publicService.tokenAssociation(session.accessToken.toString()).then((resp: any) => {
-          this.code = `otpauth://totp/${userResp.UserAttributes[0].Value}?secret=${resp.SecretCode}&issuer=SagePA-${environment.name}`;
+          // this.code = `otpauth://totp/${userResp.UserAttributes[0].Value}?secret=${resp.SecretCode}&issuer=SagePA-${environment.name}`;
           this.showMfaSetupPopup = true;
           this.isReset = true;
         }).catch((e: { message: string | null | undefined; }) => {

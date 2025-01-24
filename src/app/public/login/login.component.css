@@ -1,3 +1,23 @@
+
+::ng-deep .e-label-top {
+    transform: translate3d(5px, -36px, 0) scale(1) !important;
+  }
+  
+  ::ng-deep .e-float-input input {
+    height: 52px !important;
+    font-size: 16px !important;
+    font-family: AvantGardEF-Book, sans-serif !important;
+  }
+  
+  ::ng-deep .e-label-top {
+    background: white;
+  }
+  
+  ::ng-deep .cbg-field-required .e-input-group.e-control-wrapper.e-float-input .e-float-text::after {
+    content: ' *' !important;
+    color: #E74D27;
+  }
+
 .e-mask-container .e-input-group {
     width: 362px;
     padding: 10px 7px;

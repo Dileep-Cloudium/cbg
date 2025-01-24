@@ -1,6 +1,6 @@
 <div class="flex justify-center items-center h-screen bg-[#F5F5F5]">
   <div
-      class="font- bg-[#FFFFFF] w-[568px] px-[90px] py-[50px] rounded-[20px] mt-[-90px] h-[540px] relative overflow-hidden">
+      class="font- bg-[#FFFFFF] w-[568px] px-[60px] py-[50px] rounded-[20px] mt-[-90px] h-[540px] relative overflow-hidden">
       <span (click)="backToLogin()" *ngIf="showMfaSetupPopup"
           class="e-icons e-medium e-chevron-left absolute top-6 left-7 border-1 rounded-full cursor-pointer p-2 text-fontBlack"></span>
       <div *ngIf="!showMfaSetupPopup && !isConfirm">
@@ -13,32 +13,32 @@
       <form [formGroup]="loginForm" (ngSubmit)="signIn()">
           <div class="card" *ngIf="!isConfirm && !showMfaSetupPopup">
               <div class="card-body">
-                  <div class="form-group template cbg-field-required">
-                      <ejs-textbox placeholder="Email" cssClass="e-float-input" formControlName="email"
-                          floatLabelType="Always"></ejs-textbox>
-                      <div *ngIf="isFieldValid('email')"
-                          class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
-                          <div *ngIf="loginForm.get('email')?.hasError('required')">Email is required</div>
-                          <div *ngIf="loginForm.get('email')?.hasError('email')">Invalid email format</div>
-                      </div>
-                  </div>
-                  <div class="form-group template relative cbg-field-required">
-                      <ejs-textbox [type]="showButton ? 'text' : 'password'" placeholder="Password"
-                          cssClass="e-float-input" formControlName="password" floatLabelType="Always"></ejs-textbox>
-                      <span class="inline-grid float-right absolute top-10 right-3 cursor-pointer">
-                          <i class="float-right" [class]="showEye ? 'fa fa-eye' : 'fa fa-eye-slash'"
-                              (click)="showPassword()"></i>
-                      </span>
-                      <div *ngIf="isFieldValid('password')"
-                          class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
-                          <div *ngIf="loginForm.get('password')?.hasError('required')">Enter your password</div>
-                      </div>
-                  </div>
+                <div class="mb-4">
+                    <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                    <ejs-textbox class="py-2 e-bigger" type="email" placeholder="Email" floatLabelType="Never" aria-label="enter your email address" role="textbox" formControlName="email"></ejs-textbox>
+                    <div *ngIf="isFieldValid('email')"
+                        class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
+                        <div *ngIf="loginForm.get('email')?.hasError('required')">Email is required</div>
+                        <div *ngIf="loginForm.get('email')?.hasError('email')">Invalid email format</div>
+                    </div>
+                </div>
+                <div class="mb-5 relative">
+                    <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                    <ejs-textbox class="py-2 e-bigger bg-none" type="password" placeholder="Password" floatLabelType="Never" formControlName="password" aria-label="enter your email password" role="textbox"></ejs-textbox>
+                    <!-- <span class="inline-grid float-right absolute top-10 right-3 cursor-pointer">
+                        <i class="float-right" [class]="showEye ? 'fa fa-eye' : 'fa fa-eye-slash'"
+                            (click)="showPassword()"></i>
+                    </span> -->
+                    <div *ngIf="isFieldValid('password')"
+                        class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
+                        <div *ngIf="loginForm.get('password')?.hasError('required')">Enter your password</div>
+                    </div>
+                </div>
 
-                  <div class=" mt-5 flex justify-between items-center text-[#202020] font-AvantGardEF-Book text-sm">
+                  <!-- <div class=" mt-5 flex justify-between items-center text-[#202020] font-AvantGardEF-Book text-sm">
                       <div><input type="checkbox"><label> Remember me</label></div>
                       <div class="cursor-pointer" routerLink="/forgot-password">Forgot Password?</div>
-                  </div>
+                  </div> -->
 
                   <div class="row">
                       <div class="mt-8 mb-5 text-center rounded-[5px]">

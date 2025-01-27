@@ -18,6 +18,10 @@ export const routes: Routes = [
           path: 'request-pa',
           loadComponent: () => import('../shared/request-pa/request-pa.component').then(m => m.RequestPaComponent),
         },
+        // {
+        //   path: 'login',
+        //   loadComponent: () => import('./login/login.component').then(m => m.LoginComponent),
+        // },
         {
           path: '',
           loadComponent: () => import('./landing-page/landing-page.component').then(m => m.LandingPageComponent),

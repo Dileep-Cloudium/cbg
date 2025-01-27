@@ -25,7 +25,7 @@ import { CookieService } from 'ngx-cookie-service';
     TextBoxModule,
     DialogModule,
     MaskedTextBoxModule,
-    QRCodeGeneratorAllModule
+    QRCodeGeneratorAllModule,
   ],
   
 })

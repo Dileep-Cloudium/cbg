@@ -18,6 +18,10 @@
     color: #E74D27;
   }
 
+  ::ng-deep .e-input-group:not(.e-success):not(.e-warning):not(.e-error), .e-input-group.e-control-wrapper:not(.e-success):not(.e-warning):not(.e-error){
+    border: 1px solid #E8CDB0 !important;
+  }
+  
 .e-mask-container .e-input-group {
     width: 362px;
     padding: 10px 7px;

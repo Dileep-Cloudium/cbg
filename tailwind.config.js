@@ -11,12 +11,6 @@ module.exports = {
       height: {
         'calc': 'calc(100vh - 80px)'
       },
-      borderWidth: {
-        '1': '1px'
-      },
-      borderColor: {
-        'light': '#E8E8E8'
-      },
       colors: {
         'primary': '#FF6900',
         'gray': '#4E4B48'

@@ -1,84 +1,87 @@
-<div class="flex justify-center items-center">
-    <div class="min-w-[315px]" *ngIf="!showMfaSetupPopup && !showTotpPopup">
-        <div>
-            <p class="text-center text-[34px] font-AvantGardEF-Bold">Sign in</p>
-            <p class="text-[14px] mb-5 text-[#333333] text-center font-AvantGardEF-Book">Sign in with your email and password</p>
-        </div>
-        <form [formGroup]="loginForm" (ngSubmit)="signIn()">
-            <div class="card">
-                <div class="card-body">
-                  <div class="mb-4">
-                      <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">Email</label>
-                      <ejs-textbox class="py-2 e-bigger" type="email" placeholder="Email" floatLabelType="Never" aria-label="enter your email address" role="textbox" formControlName="email"></ejs-textbox>
-                      <div *ngIf="isFieldValid('email')"
-                          class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
-                          <div *ngIf="loginForm.get('email')?.hasError('required')">Email is required</div>
-                          <div *ngIf="loginForm.get('email')?.hasError('email')">Invalid email format</div>
-                      </div>
-                  </div>
-                  <div class="mb-5 relative">
-                      <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">Password</label>
-                      <ejs-textbox class="py-2 e-bigger bg-none" type="password" placeholder="Password" floatLabelType="Never" formControlName="password" aria-label="enter your email password" role="textbox"></ejs-textbox>
-                      <span class="inline-grid float-right absolute top-10 right-3 cursor-pointer">
-                          <i class="float-right" [class]="showEye ? 'fa fa-eye' : 'fa fa-eye-slash'"
-                              (click)="showPassword()"></i>
-                      </span>
-                      <div *ngIf="isFieldValid('password')"
-                          class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
-                          <div *ngIf="loginForm.get('password')?.hasError('required')">Enter your password</div>
-                      </div>
-                  </div>
-    
-                    <div class="cursor-pointer text-xs font-semibold text-primary text-right" (click)="outputAction('forgot-password')">Forgot your password?</div>
-    
-                    <div class="m-5 mb-2 text-center">
-                        <button
-                            class=" text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-AvantGardEF-Book"
-                            [ngClass]="(loginForm.invalid)? 'opacity-50 cursor-not-allowed' : 'opacity-100'"
-                            [disabled]="appService.isLoading || loginForm.invalid" ejs-button cssClass="e-success"
-                            type="submit">Sign in</button>
+<!-- <ejs-dialog id='dialog' #ejDialog target=".content" [visible]="false" [showCloseIcon]='true'
+width='400px' class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-none rounded-xl overflow-hidden"> -->
+    <div class="flex justify-center items-center">
+        <div class="min-w-[315px]" *ngIf="!showMfaSetupPopup && !showTotpPopup">
+            <div>
+                <p class="text-center text-[34px] font-AvantGardEF-Bold">Sign in</p>
+                <p class="text-[14px] mb-5 text-[#333333] text-center font-AvantGardEF-Book">Sign in with your email and password</p>
+            </div>
+            <form [formGroup]="loginForm" (ngSubmit)="signIn()">
+                <div class="card">
+                    <div class="card-body">
+                    <div class="mb-4">
+                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">Email</label>
+                        <ejs-textbox class="py-2 e-bigger" type="email" placeholder="Email" floatLabelType="Never" aria-label="enter your email address" role="textbox" formControlName="email"></ejs-textbox>
+                        <div *ngIf="isFieldValid('email')"
+                            class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
+                            <div *ngIf="loginForm.get('email')?.hasError('required')">Email is required</div>
+                            <div *ngIf="loginForm.get('email')?.hasError('email')">Invalid email format</div>
+                        </div>
                     </div>
-                    <div class="text-center text-xs  text-[#202020] font-AvantGardEF-Book mb-4">
-                        Need an account? 
-                        <span class="text-primary cursor-pointer font-bold"
-                            (click)="outputAction('register')">Sign up</span>
+                    <div class="mb-5 relative">
+                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">Password</label>
+                        <ejs-textbox class="py-2 e-bigger bg-none" type="password" placeholder="Password" floatLabelType="Never" formControlName="password" aria-label="enter your email password" role="textbox"></ejs-textbox>
+                        <span class="inline-grid float-right absolute top-10 right-3 cursor-pointer">
+                            <i class="float-right" [class]="showEye ? 'fa fa-eye' : 'fa fa-eye-slash'"
+                                (click)="showPassword()"></i>
+                        </span>
+                        <div *ngIf="isFieldValid('password')"
+                            class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
+                            <div *ngIf="loginForm.get('password')?.hasError('required')">Enter your password</div>
+                        </div>
+                    </div>
+        
+                        <div class="cursor-pointer text-xs font-semibold text-primary text-right" (click)="outputAction('forgot-password')">Forgot your password?</div>
+        
+                        <div class="m-5 mb-2 text-center">
+                            <button
+                                class=" text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-AvantGardEF-Book"
+                                [ngClass]="(loginForm.invalid)? 'opacity-50 cursor-not-allowed' : 'opacity-100'"
+                                [disabled]="appService.isLoading || loginForm.invalid" ejs-button cssClass="e-success"
+                                type="submit">Sign in</button>
+                        </div>
+                        <div class="text-center text-xs  text-[#202020] font-AvantGardEF-Book mb-4">
+                            Need an account? 
+                            <span class="text-primary cursor-pointer font-bold"
+                                (click)="outputAction('register')">Sign up</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
-    </div>
-    <div *ngIf="showMfaSetupPopup" class="cbg-trans-mfa">
-        <h1 class="font-AvantGardEF-Bold text-center text-4xl py-3">Setup MFA</h1>
-        <ejs-qrcodegenerator #barcode id="barcode" width="200px" height="150px"
-            [displayText]="{'visibility': false}" style="margin: auto; visibility: hidden;" mode="SVG"
-            [value]="code"></ejs-qrcodegenerator>
-        <label class="my-7 text-center text-base font-AvantGardEF-Book text-fontBlack block">Please
-            scan this QR code in any authenticator app and enter the code below</label>
-        <ejs-maskedtextbox class="text-3xl px-2" id="totp" name="totp"
-            mask="0   0   0   0   0   0"></ejs-maskedtextbox>
-        <div class="row">
-            <div class="mt-8 mb-5 text-center rounded-[5px]">
-                <button (click)="confirmTotp()"
-                    class="w-full text-base py-3 text-[#FFFFFF] bg-[#7DAFAA] border-none cursor-pointer font-AvantGardEF-Bold"
-                    ejs-button cssClass="e-success" type="submit">Submit</button>
-            </div>
+            </form>
         </div>
-
-    </div>
-    <div *ngIf="showTotpPopup" class="cbg-popup" id="barcodes">
-        <div>
-            <p class="text-center font-bold text-[20px] text-fontBlack font-AvantGardEF-Bold">MFA</p>
-            <label class="my-5 text-center text-base font-AvantGardEF-Book text-fontBlack block">Enter
-                code from your authenticator app</label>
-            <ejs-maskedtextbox class="text-3xl" id="totp" name="totp"
+        <div *ngIf="showMfaSetupPopup" class="cbg-trans-mfa">
+            <h1 class="font-AvantGardEF-Bold text-center text-4xl py-3">Setup MFA</h1>
+            <ejs-qrcodegenerator #barcode id="barcode" width="200px" height="150px"
+                [displayText]="{'visibility': false}" style="margin: auto; visibility: hidden;" mode="SVG"
+                [value]="code"></ejs-qrcodegenerator>
+            <label class="my-7 text-center text-base font-AvantGardEF-Book text-fontBlack block">Please
+                scan this QR code in any authenticator app and enter the code below</label>
+            <ejs-maskedtextbox class="text-3xl px-2" id="totp" name="totp"
                 mask="0   0   0   0   0   0"></ejs-maskedtextbox>
+            <div class="row">
+                <div class="mt-8 mb-5 text-center rounded-[5px]">
+                    <button (click)="confirmTotp()"
+                        class="w-full text-base py-3 text-[#FFFFFF] bg-[#7DAFAA] border-none cursor-pointer font-AvantGardEF-Bold"
+                        ejs-button cssClass="e-success" type="submit">Submit</button>
+                </div>
+            </div>
+
         </div>
-        <div class="row">
-            <div class="mt-8 mb-5 text-center rounded-[5px]">
-                <button (click)="confirmTotp()"
-                    class="w-full text-base py-3 text-[#FFFFFF] bg-[#7DAFAA] border-none cursor-pointer font-AvantGardEF-Bold"
-                    ejs-button cssClass="e-success" type="submit">Submit</button>
+        <div *ngIf="showTotpPopup" class="cbg-popup" id="barcodes">
+            <div>
+                <p class="text-center font-bold text-[20px] text-fontBlack font-AvantGardEF-Bold">MFA</p>
+                <label class="my-5 text-center text-base font-AvantGardEF-Book text-fontBlack block">Enter
+                    code from your authenticator app</label>
+                <ejs-maskedtextbox class="text-3xl" id="totp" name="totp"
+                    mask="0   0   0   0   0   0"></ejs-maskedtextbox>
+            </div>
+            <div class="row">
+                <div class="mt-8 mb-5 text-center rounded-[5px]">
+                    <button (click)="confirmTotp()"
+                        class="w-full text-base py-3 text-[#FFFFFF] bg-[#7DAFAA] border-none cursor-pointer font-AvantGardEF-Bold"
+                        ejs-button cssClass="e-success" type="submit">Submit</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+<!-- </ejs-dialog> -->

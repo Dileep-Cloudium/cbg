@@ -16,9 +16,9 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
     RouterModule,
     DialogModule,
     CommonModule,
+    MaskedTextBoxModule,
     LoginComponent,
     RegisterComponent,
-    MaskedTextBoxModule,
     ForgotPasswordComponent
   ],
   templateUrl: './public.component.html',

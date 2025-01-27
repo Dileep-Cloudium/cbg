@@ -19,7 +19,7 @@ import { MaskedTextBoxModule, TextBoxModule } from '@syncfusion/ej2-angular-inpu
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
+  styleUrls: ['./register.component.css','../public.component.css'],
   standalone: true,
   imports: [
     CommonModule,

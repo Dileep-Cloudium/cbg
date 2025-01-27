@@ -15,7 +15,7 @@ import { CookieService } from 'ngx-cookie-service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  styleUrls: ['./login.component.css','../public.component.css'],
   standalone: true,
   imports: [
     CommonModule,

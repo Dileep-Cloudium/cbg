@@ -21,7 +21,7 @@ import { TooltipModule } from '@syncfusion/ej2-angular-popups';
     TooltipModule,
   ],
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.css'
+  styleUrls: ['./forgot-password.component.css','../public.component.css'],
 })
 export class ForgotPasswordComponent {
 /**

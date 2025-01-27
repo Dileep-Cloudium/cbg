@@ -20,8 +20,8 @@ width='400px' class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translat
                     </div>
                     <div class="mb-5 relative">
                         <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">Password</label>
-                        <ejs-textbox class="py-2 e-bigger bg-none" type="password" placeholder="Password" floatLabelType="Never" formControlName="password" aria-label="enter your email password" role="textbox"></ejs-textbox>
-                        <span class="inline-grid float-right absolute top-10 right-3 cursor-pointer">
+                        <ejs-textbox class="py-2 e-bigger bg-none" [type]="showButton ? 'text' : 'password'" placeholder="Password" floatLabelType="Never" formControlName="password" aria-label="enter your email password" role="textbox"></ejs-textbox>
+                        <span class="inline-grid float-right absolute top-[34px] right-3 cursor-pointer">
                             <i class="float-right" [class]="showEye ? 'fa fa-eye' : 'fa fa-eye-slash'"
                                 (click)="showPassword()"></i>
                         </span>

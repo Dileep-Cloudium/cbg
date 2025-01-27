@@ -20,7 +20,7 @@ export const routes: Routes = [
         },
         {
           path: '',
-          loadComponent: () => import('../shared/landing-page/landing-page.component').then(m => m.LandingPageComponent),
+          loadComponent: () => import('./landing-page/landing-page.component').then(m => m.LandingPageComponent),
         }
       ]
     },

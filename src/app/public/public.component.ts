@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { MaskedTextBoxModule } from '@syncfusion/ej2-angular-inputs';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 
 @Component({
   selector: 'app-public',
@@ -17,7 +18,8 @@ import { MaskedTextBoxModule } from '@syncfusion/ej2-angular-inputs';
     CommonModule,
     LoginComponent,
     RegisterComponent,
-    MaskedTextBoxModule
+    MaskedTextBoxModule,
+    ForgotPasswordComponent
   ],
   templateUrl: './public.component.html',
   styleUrl: './public.component.css'
@@ -52,6 +54,8 @@ export class PublicComponent {
       this.displayComponent = 'login';
     }else if(path == 'register'){
       this.displayComponent = 'register';
+    }else if(path == 'forgot-password'){
+      this.displayComponent = 'forgot-password';
     }
     console.log('displayComponent',this.displayComponent);
   }

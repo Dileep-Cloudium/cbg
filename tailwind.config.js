@@ -18,7 +18,8 @@ module.exports = {
         'light': '#E8E8E8'
       },
       colors: {
-        'gray': '#F0EFF4'
+        'primary': '#FF6900',
+        'gray': '#4E4B48'
       },
       fontFamily: {
         'AvantGardEF-Bold': 'AvantGardEF-Bold',

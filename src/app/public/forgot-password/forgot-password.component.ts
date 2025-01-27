@@ -1,15 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmResetPasswordInput, ResetPasswordOutput } from 'aws-amplify/auth';
 import { AppService } from '../../app.service';
 import { PublicService } from '../public.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ButtonModule } from '@syncfusion/ej2-angular-buttons';
+import { TextBoxModule } from '@syncfusion/ej2-angular-inputs';
+import { TooltipModule } from '@syncfusion/ej2-angular-popups';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule,FormsModule,ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TextBoxModule,
+    ButtonModule,
+    TooltipModule,
+  ],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.css'
 })
@@ -49,6 +59,12 @@ showCButton !: boolean;
  */
 showCEye !: boolean
 
+
+  /**
+  * Emitted when a row radio button is selected
+  */
+  @Output() action = new EventEmitter();
+  
 /**
  * Injecting dependencies
  * @param formbuilder - formbuilder for creating form
@@ -165,5 +181,10 @@ confirmPasswordValidator(control: AbstractControl) {
  */
 public isFieldValid(field: string) {
   return !(this.passwordCodeForm.get(field)?.valid === true) && (this.passwordCodeForm.get(field)?.dirty === true || this.passwordCodeForm.get(field)?.touched === true);
+}
+
+
+outputAction(val: any) {
+  this.action.emit(val);
 }
 }

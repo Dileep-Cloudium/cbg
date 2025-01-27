@@ -3,3 +3,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@font-face {
+    font-family: AvantGardEF-Bold;
+    src: local("Secular One"), url("./assets/fonts/AvantGardEF-Bold.otf") format("opentype");
+}
+
+@font-face {
+    font-family: AvantGardEF-Book;
+    src: local("Secular One"), url("./assets/fonts/AvantGardEF-Book.otf") format("opentype");
+}
+
+@font-face {
+    font-family: ITCAvantGardeStd-Demi;
+    src: local("Secular One"), url("./assets/fonts/ITCAvantGardeStd-Demi.otf") format("opentype");
+}

@@ -15,6 +15,10 @@ export const routes: Routes = [
           loadComponent: () => import('./policies/policies.component').then(m => m.PoliciesComponent),
         },
         {
+          path: 'request-pa',
+          loadComponent: () => import('./request-pa/request-pa.component').then(m => m.RequestPaComponent),
+        },
+        {
           path: '',
           loadComponent: () => import('./home/home.component').then(m => m.HomeComponent),
         }

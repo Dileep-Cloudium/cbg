@@ -3,10 +3,10 @@ width='400px' class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translat
     <div class="flex justify-center items-center">
         <div class="min-w-[315px]" *ngIf="!showMfaSetupPopup && !showTotpPopup">
             <div *ngIf="!isConfirm" >
-                <p class="text-center text-[34px] font-AvantGardEF-Bold">Sign in</p>
-                <p class="text-[14px] mb-5 text-[#333333] text-center font-AvantGardEF-Book">Sign in with your email and password</p>
+                <p class="text-center text-[34px] font-Brother1816-Bold font-medium">Sign in</p>
+                <p class="text-[14px] mb-5 text-[#333333] text-center font-Brother1816-Book">Sign in with your email and password</p>
             </div>
-            <div *ngIf="isConfirm" class="text-center text-[34px] font-AvantGardEF-Bold">Confirmation</div>
+            <div *ngIf="isConfirm" class="text-center text-[34px] font-Brother1816-Bold">Confirmation</div>
             <form [formGroup]="loginForm" (ngSubmit)="signIn()">
                 <div class="card" *ngIf="!isConfirm">
                     <div class="card-body">
@@ -36,12 +36,12 @@ width='400px' class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translat
         
                         <div class="m-5 mb-2 text-center">
                             <button
-                                class=" text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-AvantGardEF-Book"
+                                class=" text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-Brother1816-Book"
                                 [ngClass]="(loginForm.invalid)? 'opacity-50 cursor-not-allowed' : 'opacity-100'"
                                 [disabled]="appService.isLoading || loginForm.invalid" ejs-button cssClass="e-success"
                                 type="submit">Sign in</button>
                         </div>
-                        <div class="text-center text-xs  text-[#202020] font-AvantGardEF-Book mb-4">
+                        <div class="text-center text-xs  text-[#202020] font-Brother1816-Book mb-4">
                             Need an account? 
                             <span class="text-primary cursor-pointer font-bold"
                                 (click)="outputAction('register')">Sign up</span>
@@ -49,7 +49,7 @@ width='400px' class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translat
                     </div>
                 </div>
                 <div class="card-body text-center" *ngIf="isConfirm">
-                    <label class="text-[14px] mb-5 text-[#333333] text-center font-AvantGardEF-Book"> Register confirmation code sent to your
+                    <label class="text-[14px] mb-5 text-[#333333] text-center font-Brother1816-Book"> Register confirmation code sent to your
                         registered email. <br>
                         Please check your email</label>
                     <div class="form-group mt-8">
@@ -60,11 +60,11 @@ width='400px' class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translat
                     <div class="row">
                         <div class="mt-8 mb-5 text-center rounded-[5px]">
                             <button
-                            class=" text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-AvantGardEF-Book"
+                            class=" text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-Brother1816-Book"
                             [disabled]="appService.isLoading" (click)="confirmSignUp()">Confirm</button>
                         </div>
                     </div>
-                    <div class="text-center text-xs  text-[#202020] font-AvantGardEF-Book mb-4">Didn't receive email? <span
+                    <div class="text-center text-xs  text-[#202020] font-Brother1816-Book mb-4">Didn't receive email? <span
                         class="text-primary cursor-pointer font-bold" (click)="resendSignUpCode()">Resend
                             Code</span>
                     </div>
@@ -74,32 +74,32 @@ width='400px' class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translat
         <div *ngIf="showMfaSetupPopup">
             <span (click)="backToLogin()" *ngIf="showMfaSetupPopup"
             class="e-icons e-medium e-chevron-left absolute top-6 left-7 border-1 rounded-full cursor-pointer p-2 text-fontBlack"></span>
-            <p class="text-center text-[34px] font-AvantGardEF-Bold">Setup MFA</p>
+            <p class="text-center text-[34px] font-Brother1816-Bold">Setup MFA</p>
             <ejs-qrcodegenerator #barcode id="barcode" width="200px" height="150px"
                 [displayText]="{'visibility': false}" style="margin: auto; visibility: hidden;" mode="SVG"
                 [value]="code"></ejs-qrcodegenerator>
-            <p class="text-[14px] mb-5 text-[#333333] text-center font-AvantGardEF-Book w-2/3 m-auto">Please
+            <p class="text-[14px] mb-5 text-[#333333] text-center font-Brother1816-Book w-2/3 m-auto">Please
                 scan this QR code in any authenticator app and enter the code below</p>
             <ejs-maskedtextbox class="text-3xl px-2" id="totp" name="totp"
                 mask="0   0   0   0   0   0"></ejs-maskedtextbox>
             <div class="m-5 mb-2 text-center">
                 <button (click)="confirmTotp()"
-                class=" text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-AvantGardEF-Book"
+                class=" text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-Brother1816-Book"
                 ejs-button cssClass="e-success" type="submit">Submit</button>
             </div>
 
         </div>
         <div *ngIf="showTotpPopup" class="cbg-popup" id="barcodes">
             <div>
-                <p class="text-center text-[34px] font-AvantGardEF-Bold">MFA</p>
-                <p class="text-[14px] mb-5 text-[#333333] text-center font-AvantGardEF-Book">Enter
+                <p class="text-center text-[34px] font-Brother1816-Bold">MFA</p>
+                <p class="text-[14px] mb-5 text-[#333333] text-center font-Brother1816-Book">Enter
                     code from your authenticator app</p>
                 <ejs-maskedtextbox class="text-3xl" id="totp" name="totp"
                     mask="0   0   0   0   0   0"></ejs-maskedtextbox>
             </div>
             <div class="m-5 mb-2 text-center">
                 <button (click)="confirmTotp()"
-                class=" text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-AvantGardEF-Book"
+                class=" text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-Brother1816-Book"
                     ejs-button cssClass="e-success" type="submit">Submit</button>
             </div>
         </div>

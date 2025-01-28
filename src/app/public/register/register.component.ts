@@ -12,6 +12,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from '@syncfusion/ej2-angular-buttons';
 import { MaskedTextBoxModule, TextBoxModule } from '@syncfusion/ej2-angular-inputs';
+import { DatePickerModule } from '@syncfusion/ej2-angular-calendars';
+import { DatePipe } from '@angular/common';
 
 /**
  * Component responsible for handling register related functionality
@@ -28,7 +30,8 @@ import { MaskedTextBoxModule, TextBoxModule } from '@syncfusion/ej2-angular-inpu
     ButtonModule,
     TextBoxModule,
     TooltipModule,
-    MaskedTextBoxModule 
+    MaskedTextBoxModule,
+    DatePickerModule
   ],
 })
 
@@ -53,6 +56,12 @@ export class RegisterComponent {
    */
   showEye: boolean;
 
+  
+  /**
+   * To keep Today's date as maximum for date of birth field
+   */
+  maxDate: Date = new Date();
+
   /**
    * Reference to tooltip component
    */
@@ -72,13 +81,15 @@ export class RegisterComponent {
    * @param publicService - Service for handling public API
    * @param appService - Service for handling app related API
    */
-  constructor(private router: Router, private formBuilder: FormBuilder, private publicService: PublicService, public appService: AppService) {
+  constructor(private router: Router, private formBuilder: FormBuilder, private publicService: PublicService, public appService: AppService, private datePipe: DatePipe) {
     this.isConfirm = false;
     this.showButton = false;
     this.showEye = false;
     this.signUpForm = this.formBuilder.group({
       firstName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100), Validators.pattern("[a-zA-Z ]*")]],
       lastName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100), Validators.pattern("[a-zA-Z ]*")]],
+      memberId: ['', [Validators.required]],
+      memberDOB: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(14), Validators.pattern('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*[^a-zA-Z0-9 ]).{14,}$')]],
       code: ['']
@@ -110,13 +121,18 @@ export class RegisterComponent {
    * @param obj - object with user details
    */
   createUser() {
+   
     if (this.signUpForm.valid) {
       this.appService.isLoading = true;
       const obj: UserRegistrationModel = {
         first_name: this.signUpForm.value.firstName,
         last_name: this.signUpForm.value.lastName,
+        member_id: this.signUpForm.value.memberId,
+        member_dob: this.datePipe.transform(this.signUpForm.value.memberDOB, 'MMddyyyy') ?? '',
         email: this.signUpForm.value.email
       }
+      console.log('signup form',this.signUpForm.value);
+      return
       this.publicService.register(obj).subscribe((data: ResponseModel) => {
         this.appService.isLoading = false;
         this.signUp(data)

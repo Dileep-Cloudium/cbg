@@ -6,16 +6,11 @@
 
 
 @font-face {
-    font-family: AvantGardEF-Bold;
-    src: local("Secular One"), url("./assets/fonts/AvantGardEF-Bold.otf") format("opentype");
+    font-family: Brother1816-Bold;
+    src: local("Secular One"), url("./assets/fonts/Brother1816Printed-Medium.woff") format("opentype");
 }
 
 @font-face {
-    font-family: AvantGardEF-Book;
-    src: local("Secular One"), url("./assets/fonts/AvantGardEF-Book.otf") format("opentype");
-}
-
-@font-face {
-    font-family: ITCAvantGardeStd-Demi;
-    src: local("Secular One"), url("./assets/fonts/ITCAvantGardeStd-Demi.otf") format("opentype");
+    font-family: Brother1816-Book;
+    src: local("Secular One"), url("./assets/fonts/Brother1816Printed-Book.woff") format("opentype");
 }

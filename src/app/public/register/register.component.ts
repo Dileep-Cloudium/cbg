@@ -131,8 +131,6 @@ export class RegisterComponent {
         member_dob: this.datePipe.transform(this.signUpForm.value.memberDOB, 'MMddyyyy') ?? '',
         email: this.signUpForm.value.email
       }
-      console.log('signup form',this.signUpForm.value);
-      return
       this.publicService.register(obj).subscribe((data: ResponseModel) => {
         this.appService.isLoading = false;
         this.signUp(data)

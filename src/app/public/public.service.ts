@@ -16,8 +16,6 @@ export class PublicService {
   private cognito: CognitoIdentityProviderClient;
 
   constructor(private http: HttpClient) {
-    console.log('service initialised');
-    
     // Initialize CognitoIdentityProviderClient with region
     this.cognito = new CognitoIdentityProviderClient({
       region: "us-west-2"

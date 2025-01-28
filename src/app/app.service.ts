@@ -59,7 +59,6 @@ export class AppService {
    * @param positionY - Vertical position of toaster
    */
   openToaster(type: ToasterType, message: string | null = null, title?: string, positionX: ToasterPositionX | null = null, positionY: ToasterPositionY | null = null) {
-    console.log(type, message, title, positionX, positionY, "toaster");
     this.toasterObject = {
       type: type,
       message: message != null ? message : "No message",

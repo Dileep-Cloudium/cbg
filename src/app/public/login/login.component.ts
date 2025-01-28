@@ -11,6 +11,8 @@ import { AuthTokens, AuthUser, SignInOutput } from 'aws-amplify/auth';
 import { QRCodeGeneratorAllModule } from '@syncfusion/ej2-angular-barcode-generator';
 import { environment } from '../../../environments/environment.develop';
 import { CookieService } from 'ngx-cookie-service';
+import { AssociateSoftwareTokenResponse } from "@aws-sdk/client-cognito-identity-provider";
+
 
 @Component({
   selector: 'app-login',
@@ -127,7 +129,6 @@ export class LoginComponent implements OnInit {
     // Check whether the user logged in or not
     this.appService.getCurrentUser().then((resp: AuthUser) => {
       if ("userId" in resp) {
-        console.log(resp, "resp")
         this.loginSuccess(resp)
       }
     })
@@ -155,12 +156,10 @@ export class LoginComponent implements OnInit {
    */
   public signIn(): void {
     this.appService.isLoading = true;
-    console.log(this.loginForm.value, "loginForm")
     this.publicService.signIn(this.loginForm.value.email, this.loginForm.value.password)
       .then(async (resp: SignInOutput) => {
         this.appService.isLoading = false;
         const { nextStep } = resp;
-        console.log('response',nextStep)
         switch (nextStep.signInStep) {
           case 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP':
             // This happens when the MFA method is TOTP
@@ -245,59 +244,55 @@ export class LoginComponent implements OnInit {
     this.showMfaSetupPopup = false;
   }
 
-  /**
+/**
    * On submit of TOTP code
    */
-  async confirmTotp() {
-    const value = (document.getElementById("totp") as HTMLInputElement).value.replace(/ |_/g, '');
-    if (value == "" || value.length !== 6) {
-      this.appService.openToaster("warning", "Please enter six digit code from your authenticator app");
-    }
-    else {
-      this.appService.isLoading = true;
-      if (this.isReset === true) {
-        const session: AuthTokens = await this.appService.getAuthTokens();
-        this.publicService.validateTOTP(session.accessToken.toString(), value).then(async (resp:any) => {
-          console.log(resp)
-          this.appService.isLoading = false;
-          this.publicService.setUserMFA(session.accessToken.toString()).then(async (resp:any) => {
-            console.log(resp)
-            const user: AuthUser = await this.appService.getCurrentUser();
-            this.showLoginSuccess = true;
-            this.loginSuccess(user);
-          }).catch((e:any) => {
-            this.appService.isLoading = false;
-            this.appService.openToaster("error", e.message)
-          });
-        }).catch((e:any) => {
+async confirmTotp() {
+  const value = (document.getElementById("totp") as HTMLInputElement).value.replace(/ |_/g, '');
+  if (value == "" || value.length !== 6) {
+    this.appService.openToaster("warning", "Please enter six digit code from your authenticator app");
+  }
+  else {
+    this.appService.isLoading = true;
+    if (this.isReset === true) {
+      const session: AuthTokens = await this.appService.getAuthTokens();
+      this.publicService.validateTOTP(session.accessToken.toString(), value).then(async (resp) => {
+        this.appService.isLoading = false;
+        this.publicService.setUserMFA(session.accessToken.toString()).then(async (resp) => {
+          const user: AuthUser = await this.appService.getCurrentUser();
+          this.showLoginSuccess = true;
+          this.loginSuccess(user);
+        }).catch((e) => {
           this.appService.isLoading = false;
           this.appService.openToaster("error", e.message)
         });
-      } else {
-        this.publicService.confirmSignin(value).then(async (resp) => {
-          this.appService.isLoading = false;
-          if ("isSignedIn" in resp) {
-            const user: AuthUser = await this.appService.getCurrentUser();
-            this.showLoginSuccess = true;
-            this.loginSuccess(user);
-          } else {
-            this.appService.openToaster("error", ("message" in resp) ? resp?.message : "Login failed");
-          }
-        })
-      }
-      this.showTotpPopup = false;
+      }).catch((e) => {
+        this.appService.isLoading = false;
+        this.appService.openToaster("error", e.message)
+      });
+    } else {
+      this.publicService.confirmSignin(value).then(async (resp) => {
+        this.appService.isLoading = false;
+        if ("isSignedIn" in resp) {
+          const user: AuthUser = await this.appService.getCurrentUser();
+          this.showLoginSuccess = true;
+          this.loginSuccess(user);
+        } else {
+          this.appService.openToaster("error", ("message" in resp) ? resp?.message : "Login failed");
+        }
+      })
     }
+    this.showTotpPopup = false;
   }
+}
 
   /**
    * After successful login, set the tokens into cookie storage and navigate to profile page
    * @param user - authenticated user details
    */
   async loginSuccess(user: AuthUser) {
-    console.log("loginSuccess")
     const session: AuthTokens = await this.appService.getAuthTokens();
     this.appService.getUser(session.accessToken.toString()).then(async (userResp) => {
-      console.log(userResp, "userResp")
       if ("UserMFASettingList" in userResp) {
         this.cookieService.set('access_token', session.accessToken.toString(), 1, "/");
         this.cookieService.set('id_token', session?.idToken?.toString() ?? "", 1, "/");
@@ -307,10 +302,12 @@ export class LoginComponent implements OnInit {
         this.close.emit('rx-claims');
       }
       else {
-        this.publicService.tokenAssociation(session.accessToken.toString()).then((resp: any) => {
-          // this.code = `otpauth://totp/${userResp.UserAttributes[0].Value}?secret=${resp.SecretCode}&issuer=SagePA-${environment.name}`;
-          this.showMfaSetupPopup = true;
-          this.isReset = true;
+        this.publicService.tokenAssociation(session.accessToken.toString()).then((resp: AssociateSoftwareTokenResponse) => {
+          if (userResp.UserAttributes && userResp.UserAttributes[0]) {
+            this.code = `otpauth://totp/${userResp.UserAttributes[0].Value}?secret=${resp.SecretCode}&issuer=Nexusgate-${environment.name}`;
+            this.showMfaSetupPopup = true;
+            this.isReset = true;
+          }
         }).catch((e: { message: string | null | undefined; }) => {
           this.appService.isLoading = false;
           this.appService.openToaster("error", e.message);

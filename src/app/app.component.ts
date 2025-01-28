@@ -22,7 +22,6 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    console.log('AppComponent ngOnInit');
     this.appService.openToasterEmit.subscribe(() => {
       this.toasterComponent?.onCreate();
     })

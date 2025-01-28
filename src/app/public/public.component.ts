@@ -31,24 +31,16 @@ export class PublicComponent {
 
   displayComponent: string = '';
 
-  constructor(private router: Router) {
-    console.log('public component constructor');
-    
-  }
+  constructor(private router: Router) {}
 
   ngOnInit(): void {}
 
   navigate(path: string) {
-    console.log('navigate', path);
-    
     this.router.navigate([path]);
   }
 
 
   showDialog(path: any) {
-    console.log('path',path);
-    console.log('ejDialog',this.ejDialog);
-    
     this.ejDialog.show();
     if(path == 'login'){
       this.displayComponent = 'login';
@@ -57,7 +49,6 @@ export class PublicComponent {
     }else if(path == 'forgot-password'){
       this.displayComponent = 'forgot-password';
     }
-    console.log('displayComponent',this.displayComponent);
   }
   
   closeDialog(path: any){

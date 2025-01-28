@@ -8,23 +8,15 @@ export const routes: Routes = [
       children: [
         {
           path: 'pharmacies',
-          loadComponent: () => import('../shared/pharmacies/pharmacies.component').then(m => m.PharmaciesComponent),
+          loadComponent: () => import('./pharmacies/pharmacies.component').then(m => m.PharmaciesComponent),
         },
         {
           path: 'policy',
-          loadComponent: () => import('../shared/policies/policies.component').then(m => m.PoliciesComponent),
+          loadComponent: () => import('./policies/policies.component').then(m => m.PoliciesComponent),
         },
-        {
-          path: 'request-pa',
-          loadComponent: () => import('../shared/request-pa/request-pa.component').then(m => m.RequestPaComponent),
-        },
-        // {
-        //   path: 'login',
-        //   loadComponent: () => import('./login/login.component').then(m => m.LoginComponent),
-        // },
         {
           path: '',
-          loadComponent: () => import('./landing-page/landing-page.component').then(m => m.LandingPageComponent),
+          loadComponent: () => import('./home/home.component').then(m => m.HomeComponent),
         }
       ]
     },

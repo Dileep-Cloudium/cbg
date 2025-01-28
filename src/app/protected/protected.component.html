@@ -1,17 +1,21 @@
 <div class="protected-container">
-    <ejs-appbar colorMode="Primary">
-        <!-- <div class="e-appbar-spacer"></div> -->
-        <div class="nav-center">
-            <button ejs-button cssClass="e-inherit" (click)="navigate('rx-claims')">RX CLAIMS</button>
-            <button ejs-button cssClass="e-inherit" (click)="navigate('benefits')">BENIFITS</button>
-            <button ejs-button cssClass="e-inherit" (click)="navigate('pharmacies')">PHARMACIES</button>
-            <button ejs-button cssClass="e-inherit" (click)="navigate('policy')">POLICIES</button>
-            <button ejs-button cssClass="e-inherit" (click)="navigate('request-pa')">REQUEST PA</button>
+    <div class="flex justify-between items-center bg-[#F4F4F4] py-4 px-4 fixed top-0 right-0 left-0">
+        <div class="logo cursor-pointer" (click)="navigate('home')">
+            <img src="../../assets/logos/member_portal_logo.png" alt="logo" class="w-[100px]">
         </div>
-        <button ejs-button cssClass="e-primary" (click)="signOut()">Logout</button>
-    </ejs-appbar>
+        <div class="nav-links">
+            <button ejs-button cssClass="e-inherit font-semibold" (click)="navigate('rx-claims')">RX CLAIMS</button>
+            <button ejs-button cssClass="e-inherit font-semibold" (click)="navigate('benefits')">BENIFITS</button>
+            <button ejs-button cssClass="e-inherit font-semibold" (click)="navigate('pharmacies')">PHARMACIES</button>
+            <button ejs-button cssClass="e-inherit font-semibold" (click)="navigate('policy')">POLICIES</button>
+            <!-- <button ejs-button cssClass="e-inherit font-semibold" (click)="navigate('request-pa')">REQUEST PA</button> -->
+        </div>
+        <div class="login-button">
+            <button ejs-button class="e-inherit text-sm font-medium border-2 border-[gray] rounded-full px-4 py-1 uppercase" id="targetButton"  (click)="signOut()">Logout</button>
+        </div>
+    </div>
     
-    <div class="content">
+    <div class="content p-0 mt-[65px]">
         <router-outlet></router-outlet>
     </div>
         

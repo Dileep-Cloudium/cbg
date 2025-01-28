@@ -97,12 +97,9 @@ constructor(private formbuilder: FormBuilder, private publicService: PublicServi
 async handleResetPassword() {
   if (this.passwordEmailForm.value.email != null) {
     this.appService.isLoading = true;
-    console.log(this.passwordEmailForm.value.email)
     this.publicService.resetPassword(this.passwordEmailForm.value.email)
       .then((resp: ResetPasswordOutput) => {
-        console.log(resp);
         const { nextStep } = resp;
-        console.log(nextStep.resetPasswordStep)
         switch (nextStep.resetPasswordStep) {
           case 'CONFIRM_RESET_PASSWORD_WITH_CODE':
             this.appService.isLoading = false;
@@ -112,7 +109,6 @@ async handleResetPassword() {
         }
       }).catch((e) => {
         this.appService.isLoading = false;
-        console.log(e)
         this.appService.openToaster("error", e.message)
       });
   }
@@ -132,7 +128,6 @@ async handleConfirmResetPassword() {
   this.publicService.confirmResetPassword(inputObj)
     .then(resp => {
       this.appService.isLoading = false;
-      console.log(resp);
       if (resp == undefined) {
         this.appService.isLoading = false;
         this.appService.openToaster("success", "Password reset successfully");

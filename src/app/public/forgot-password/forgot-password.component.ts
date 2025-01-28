@@ -131,7 +131,7 @@ async handleConfirmResetPassword() {
       if (resp == undefined) {
         this.appService.isLoading = false;
         this.appService.openToaster("success", "Password reset successfully");
-        this.router.navigate(['login']);
+        this.action.emit('login');
       }
       else {
         this.appService.isLoading = false;

@@ -1,9 +1,9 @@
-<div>
+<div [ngClass]="{'h-screen overflow-hidden' : appService.isLoading}">
   <router-outlet></router-outlet>
-</div>
-<app-toaster #Toaster [toasterObj]="appService.toasterObject"></app-toaster>
-<div [hidden]="!appService.isLoading" class="absolute z-1000 top-0 bottom-0 w-full bg-slate-500/50">
-  <div class="w-full h-full flex items-center">
-    <img class="mx-auto h-20" src="../assets/loader.gif" alt="Loader" />
+  <app-toaster #Toaster [toasterObj]="appService.toasterObject"></app-toaster>
+  <div [hidden]="!appService.isLoading" class="absolute z-1000 top-0 bottom-0 w-full bg-slate-500/50">
+    <div class="w-full h-full flex items-center">
+      <img class="mx-auto h-20" src="../assets/loader.gif" alt="Loader" />
+    </div>
   </div>
 </div>

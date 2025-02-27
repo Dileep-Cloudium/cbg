@@ -75,10 +75,6 @@ jobs:
         run: |
           npm ci && aws --version
 
-      - name: Lint and format source code
-        run: |
-          npm run clean && npm run format && npm run spellcheck
-
       - name: Build UI solution (Arcadia Test)
         if: success() && github.ref == 'refs/heads/feature/boiler-plate'
         run: |

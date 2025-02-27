@@ -89,8 +89,8 @@ jobs:
         if: success() && github.ref == 'refs/heads/feature/boiler-plate'
         env:
           ACCOUNT: arcadia
-          CBG_ENVIRONMENT: test
-          REGION: us-west-2
+          CBG_ENVIRONMENT: develop
+          REGION: ap-south-1
         run: |
           aws s3 sync --profile "$ACCOUNT-$CBG_ENVIRONMENT" \
             --region "$REGION" \

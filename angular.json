@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/nexusgate-pbm-ui",
+            "outputPath": "dist/nexusgate-pbmui",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -90,5 +90,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "3e296853-6b9f-4b1d-8163-8a458c11376d"
   }
 }

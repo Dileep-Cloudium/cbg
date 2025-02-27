@@ -1,0 +1,47 @@
+# DESCRIPTION: On push events to monitored patterns, install dependencies, execute unit tests,
+# apply linting, build solution, deploy solution, and notify Fireteam and ChatOps channels.
+
+# NOTES: This workflow ignores the infrastructure stack changes and is targeted at deploying
+# code. Will only run on push events that INCLUDE AT LEAST ONE file outside the paths-ignore
+# directory at the root of the repository.
+
+name: CD code / On push to develop/main
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feture/boiler-plate
+
+jobs:
+  buildTestAndDeploy:
+    name: Build, test and deploy
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          echo "Checking out the latest code..."
+          echo "Current branch: ${{ github.ref_name }}"
+          echo "Current commit: ${{ github.sha }}"
+          echo "Current repository: ${{ github.repository }}"
+          echo "Current workflow: ${{ github.workflow }}"
+          echo "Current run ID: ${{ github.run_id }}"
+          echo "POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}"
+
+      - name: Configure AWS credentials (elysia-develop)
+        if: github.ref_name == 'develop'
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          aws-access-key-id: ${{ secrets.ELYSIA_DEVELOP_AWS_KEY}}
+          aws-secret-access-key: ${{ secrets.ELYSIA_DEVELOP_AWS_SECRET }}
+          aws-region: ${{ env.AWS_REGION }}
+      

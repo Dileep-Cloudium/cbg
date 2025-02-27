@@ -92,10 +92,13 @@ jobs:
           CBG_ENVIRONMENT: develop
           REGION: ap-south-1
         run: |
+          echo "Profile: $ACCOUNT-$CBG_ENVIRONMENT"
+          echo "Region: $REGION"
+          echo "Bucket: ${ACCOUNT}-${CBG_ENVIRONMENT}-sites"
           aws s3 sync --profile "$ACCOUNT-$CBG_ENVIRONMENT" \
             --region "$REGION" \
             ./dist/nexusgate-pbmui/ \
-            s3://${ACCOUNT}-${CBG_ENVIRONMENT}-sites --delete --sse
+            s3://nexusgate-pbmui --delete --sse
 
       - name: OWASP Zap Scan (Arcadia Test)
         if: success() && github.ref == 'refs/heads/feature/boiler-plate'

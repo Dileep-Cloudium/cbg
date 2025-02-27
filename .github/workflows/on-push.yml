@@ -27,12 +27,150 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v4
 
-      - name: Print github context and secrets
+      - name: Configure AWS credentials
+        env:
+          ARCADIA_DEVELOP_AWS_KEY: ${{ secrets.ARCADIA_DEVELOP_AWS_KEY }}
+          ARCADIA_DEVELOP_AWS_SECRET: ${{ secrets.ARCADIA_DEVELOP_AWS_SECRET }}
+
+          # ARCADIA_TEST_AWS_KEY: ${{ secrets.ARCADIA_TEST_AWS_KEY }}
+          # ARCADIA_TEST_AWS_SECRET: ${{ secrets.ARCADIA_TEST_AWS_SECRET }}
+
+          # ARCADIA_PROD_AWS_KEY: ${{ secrets.ARCADIA_PROD_AWS_KEY }}
+          # ARCADIA_PROD_AWS_SECRET: ${{ secrets.ARCADIA_PROD_AWS_SECRET }}
         run: |
-          echo "Checking out the latest code..."
-          echo "Current branch: ${{ github.ref_name }}"
-          echo "Current commit: ${{ github.sha }}"
-          echo "Current repository: ${{ github.repository }}"
-          echo "Current workflow: ${{ github.workflow }}"
-          echo "Current run ID: ${{ github.run_id }}"
-          echo "POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}"
+          mkdir ~/.aws && touch ~/.aws/credentials
+          cat <<EOL >> ~/.aws/credentials
+          [default]
+          aws_access_key_id=nil
+          aws_secret_access_key=nil
+
+          [arcadia-develop]
+          aws_access_key_id=$ARCADIA_DEVELOP_AWS_KEY
+          aws_secret_access_key=$ARCADIA_DEVELOP_AWS_SECRET
+
+          [arcadia-test]
+          aws_access_key_id=$ARCADIA_TEST_AWS_KEY
+          aws_secret_access_key=$ARCADIA_TEST_AWS_SECRET
+
+          [arcadia-prod]
+          aws_access_key_id=$ARCADIA_PROD_AWS_KEY
+          aws_secret_access_key=$ARCADIA_PROD_AWS_SECRET
+          EOL
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: |
+          npm ci && aws --version
+
+      - name: Lint and format source code
+        run: |
+          npm run clean && npm run format && npm run spellcheck
+
+      - name: Build UI solution (Arcadia Test)
+        if: success() && github.ref == 'refs/heads/feature/boiler-plate'
+        run: |
+          npm run build:test
+
+      - name: Build UI solution (Arcadia Prod)
+        if: success() && github.ref == 'refs/heads/main'
+        run: |
+          npm run build:prod
+      
+      - name: Deploy UI solution to S3 (Arcadia Test)
+        if: success() && github.ref == 'refs/heads/feature/boiler-plate'
+        env:
+          ACCOUNT: arcadia
+          CBG_ENVIRONMENT: test
+          REGION: us-west-2
+        run: |
+          aws s3 sync --profile "$ACCOUNT-$CBG_ENVIRONMENT" \
+            --region "$REGION" \
+            ./dist/nexusgate-pbmui/ \
+            s3://${ACCOUNT}-${CBG_ENVIRONMENT}-sites --delete --sse
+
+      - name: OWASP Zap Scan (Arcadia Test)
+        if: success() && github.ref == 'refs/heads/feature/boiler-plate'
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: https://nexusgate-pbmui.cbgapps-test.io/
+      
+      - name: Deploy UI solution to S3 (Arcadia Prod)
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          ACCOUNT: arcadia
+          CBG_ENVIRONMENT: prod
+          REGION: us-west-2
+        run: |
+          aws s3 sync --profile "$ACCOUNT-$CBG_ENVIRONMENT" \
+            --region "$REGION" \
+            ./dist/portal/ \
+            s3://${ACCOUNT}-${CBG_ENVIRONMENT}-sites --delete --sse
+
+      - name: OWASP Zap Scan (Arcadia Prod)
+        if: success() && github.ref == 'refs/heads/main'
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: https://nexusgate-pbmui.cbgapps.io
+
+      - name: Compile build message for logs and notifications
+        if: always()
+        id: build_message
+        env:
+          JOB_STATUS: ${{ job.status }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+          GITHUB_EVENT: ${{ github.event_name }}
+          GITHUB_JOB: ${{ github.job }}
+          GITHUB_WORKFLOW: ${{ github.workflow }}
+          GITHUB_RUN_NO: ${{ github.run_number }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          echo ::set-output name=friendly::"**SERVICE:** CBG Arcadia > Members | **REPO:** $GITHUB_REPOSITORY | **REF:** $GITHUB_REF | **HEAD\_REF:** $GITHUB_HEAD_REF | **BASE\_REF:** $GITHUB_BASE_REF | **EVENT:** ${GITHUB_EVENT//_} | **MESSAGE:** Job _${GITHUB_JOB}_ completed in workflow _${GITHUB_WORKFLOW}_ for run _${GITHUB_RUN_NO}_ by _${GITHUB_ACTOR}_ with status of _${JOB_STATUS}_"
+
+          echo ::set-output name=json::\''{"service": "CBG Arcadia > Members", "jobStatus": "'"$JOB_STATUS"'", "repository": "'"$GITHUB_REPOSITORY"'", "githubRef": "'"$GITHUB_REF"'", "githubHeadRef": "'"$GITHUB_HEAD_REF"'", "githubBaseRef": "'"$GITHUB_BASE_REF"'", "githubJob": "'"$GITHUB_JOB"'", "githubWorkflow": "'"$GITHUB_WORKFLOW"'", "githubRunNo": "'"$GITHUB_RUN_NO"'", "githubActor": "'"$GITHUB_ACTOR"'", "markdown": "'"Job _${GITHUB_JOB}_ completed in workflow _${GITHUB_WORKFLOW}_ for run _${GITHUB_RUN_NO}_ by _${GITHUB_ACTOR}_ with status of _${JOB_STATUS}_"'"}'\'
+
+      # - name: Notify Slack
+      #   if: always()
+      #   uses: slackapi/slack-github-action@v2.0.0
+      #   with:
+      #     webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     webhook-type: incoming-webhook
+      #     payload: |
+      #       text: >-
+      #         ${{ job.status == 'success' &&
+      #             ':white_check_mark: Deployment successful' ||
+      #             ':x: Deployment failed'
+      #         }} for ${{ github.repository }} to ${{ github.ref_name }}
+      #       blocks:
+      #         - type: section
+      #           text:
+      #             type: mrkdwn
+      #             text: >-
+      #               ${{ job.status == 'success' &&
+      #                   ':white_check_mark: Deployment successful' ||
+      #                   ':x: Deployment failed'
+      #               }} for ${{ github.repository }} to ${{ github.ref_name }}
+      #         - type: section
+      #           text:
+      #             type: mrkdwn
+      #             text: >-
+      #               ${{ job.status == 'success' &&
+      #                   'UI has been successfully deployed.' ||
+      #                   'The deployment process has failed.
+      #                   Please check the GitHub Actions logs for details.'
+      #               }}

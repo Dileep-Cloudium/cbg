@@ -16,9 +16,8 @@ module.exports = {
         'gray': '#4E4B48'
       },
       fontFamily: {
-        'AvantGardEF-Bold': 'AvantGardEF-Bold',
-        'AvantGardEF-Book': 'AvantGardEF-Book',
-        'ITCAvantGardeStd-Demi': 'ITCAvantGardeStd-Demi'
+        'Brother1816-Bold': 'Brother1816-Bold',
+        'Brother1816-Book': 'Brother1816-Book'
       },
       textColor: {
         "fontBlack": '#202020'

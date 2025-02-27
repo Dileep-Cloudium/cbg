@@ -48,7 +48,7 @@
   ::ng-deep .e-float-input input {
     height: 52px !important;
     font-size: 16px !important;
-    font-family: AvantGardEF-Book, sans-serif !important;
+    font-family: Brother1816-Book, sans-serif !important;
   }
   
   ::ng-deep .e-label-top {
@@ -64,7 +64,7 @@
     border: 1px solid #E8CDB0 !important;
   }
 
-  ::ng-deep .e-bigger::placeholder {
+  ::ng-deep .e-input::placeholder {
     font-size: 12px; /* Adjust size as needed */
     font-weight: 400; /* Adjust weight as needed */
     color: #888; /* Optional: Change placeholder color */

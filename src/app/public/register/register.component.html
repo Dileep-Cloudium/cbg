@@ -1,9 +1,9 @@
 <div class="flex justify-center items-center">
     <div class="min-w-[315px]">
         <div>
-            <h1 *ngIf="!isConfirm" class="text-center text-[34px] font-AvantGardEF-Bold">Sign up</h1>
-            <p *ngIf="!isConfirm" class="text-[14px] mb-5 text-[#333333] text-center font-AvantGardEF-Book">Sign up with a new account</p>
-            <h1 *ngIf="isConfirm" class="text-center text-[34px] font-AvantGardEF-Bold">Confirmation</h1>
+            <h1 *ngIf="!isConfirm" class="text-center text-[34px] font-Brother1816-Bold font-medium">Sign up</h1>
+            <p *ngIf="!isConfirm" class="text-[14px] mb-5 text-[#333333] text-center font-Brother1816-Book">Sign up with a new account</p>
+            <h1 *ngIf="isConfirm" class="text-center text-[34px] font-Brother1816-Bold">Confirmation</h1>
         </div>
         <form [formGroup]="signUpForm">
             <div class="card">
@@ -37,6 +37,23 @@
                             <div *ngIf="signUpForm.get('lastName')?.hasError('pattern')">Last name should only
                                 contain
                                 alphabets </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">Member Id</label>
+                        <ejs-textbox class="py-2 e-bigger" type="text" placeholder="Member Id"  formControlName="memberId" floatLabelType="Never"></ejs-textbox>
+                        <div *ngIf="isFieldValid('memberId')"
+                            class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
+                            <div *ngIf="signUpForm.get('memberId')?.hasError('required')">Member Id is required</div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">Date of Birth</label>
+                        <ejs-datepicker placeholder="MM/DD/YYYY"  format="MM/dd/yyyy" class="py-2 e-bigger" 
+                            formControlName="memberDOB" [max]="maxDate" floatLabelType="Never"></ejs-datepicker>
+                        <div *ngIf="isFieldValid('memberDOB')"
+                            class="e-error text-[11px] text-[#D72020] font-semibold mt-[5px]">
+                            <div *ngIf="signUpForm.get('memberDOB')?.hasError('required')">Date of Birth is required</div>
                         </div>
                     </div>
                     <div class="mb-4">
@@ -90,18 +107,18 @@
                 </div>
                 <div class="m-5 mb-2 text-center" *ngIf="!isConfirm">
                     <button
-                        class="text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-AvantGardEF-Book"
+                        class="text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-Brother1816-Book"
                         [ngClass]="(signUpForm.invalid)? 'opacity-50 cursor-not-allowed' : 'opacity-100'"
                          ejs-button cssClass="e-success"
                         (click)="createUser()"
                         [disabled]="appService.isLoading || signUpForm.invalid">Sign up</button>
                 </div>
-                <div  *ngIf="!isConfirm" class="text-center text-xs  text-[#202020] font-AvantGardEF-Book mb-4">
+                <div  *ngIf="!isConfirm" class="text-center text-xs  text-[#202020] font-Brother1816-Book mb-4">
                     Already have an account? <span class="text-primary cursor-pointer font-bold"
                     (click)="outputAction('login')">Sign in</span>
                 </div>
                 <div class="card-body text-center" *ngIf="isConfirm">
-                    <label class="font-AvantGardEF-Book text-sm leading-8"> Register confirmation code sent to your
+                    <label class="font-Brother1816-Book text-sm leading-8"> Register confirmation code sent to your
                         registered email. <br>
                         Please check your email</label>
                     <div class="form-group mt-8">
@@ -111,7 +128,7 @@
                     </div>
                     <div class="m-5 mb-2 text-center">
                         <button
-                            class="text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-AvantGardEF-Book"
+                            class="text-center rounded-full text-xs py-3 px-[40px] text-[#FFFFFF] bg-primary border-none cursor-pointer font-Brother1816-Book"
                             (click)="confirmSignUp()" [disabled]="appService.isLoading">Confirm</button>
                     </div>
                 </div>

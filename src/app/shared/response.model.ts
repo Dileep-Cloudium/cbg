@@ -29,6 +29,16 @@ export interface UserRegistrationModel {
     last_name: string,
 
     /**
+     * member id of user
+     */
+    member_id: string,
+
+    /**
+     * date of birth of member of user
+     */
+    member_dob: string,
+
+    /**
      * email of user
      */
     email: string

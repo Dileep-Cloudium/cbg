@@ -9,12 +9,14 @@ import { GlobalErrorHandler } from './core/handler/globalErrorHandler';
 import { AuthGuard } from './core/guards/auth.guard';
 import { AppService } from './app.service';
 import { Interceptor } from './core/interceptor/interceptor.interceptor';
+import { DatePipe } from '@angular/common';
 
 registerLicense(environment.syncfusionLicenseKey);
 export const appConfig: ApplicationConfig = {
   providers: [
     AuthGuard,
     AppService,
+    DatePipe,
     provideRouter(routes),
     provideHttpClient(),
     provideZoneChangeDetection({ eventCoalescing: true }),

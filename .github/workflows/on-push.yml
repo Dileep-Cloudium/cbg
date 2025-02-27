@@ -97,15 +97,9 @@ jobs:
           echo "Bucket: ${ACCOUNT}-${CBG_ENVIRONMENT}-sites"
           aws s3 sync --profile "$ACCOUNT-$CBG_ENVIRONMENT" \
             --region "$REGION" \
-            ./dist/nexusgate-pbmui/ \
+            ./dist/nexusgate-pbmui/browser \
             s3://nexusgate-pbmui --delete --sse
 
-      - name: OWASP Zap Scan (Arcadia Test)
-        if: success() && github.ref == 'refs/heads/feature/boiler-plate'
-        uses: zaproxy/action-baseline@v0.12.0
-        with:
-          target: https://nexusgate-pbmui.cbgapps-test.io/
-      
       - name: Deploy UI solution to S3 (Arcadia Prod)
         if: success() && github.ref == 'refs/heads/main'
         env:

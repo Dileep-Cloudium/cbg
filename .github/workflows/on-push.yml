@@ -12,7 +12,7 @@ on:
     branches:
       - main
       - develop
-      - feture/boiler-plate
+      - feature/boiler-plate
 
 jobs:
   buildTestAndDeploy:
@@ -27,7 +27,7 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Print github context and secrets
         run: |
           echo "Checking out the latest code..."
           echo "Current branch: ${{ github.ref_name }}"
@@ -36,12 +36,3 @@ jobs:
           echo "Current workflow: ${{ github.workflow }}"
           echo "Current run ID: ${{ github.run_id }}"
           echo "POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}"
-
-      - name: Configure AWS credentials (elysia-develop)
-        if: github.ref_name == 'develop'
-        uses: aws-actions/configure-aws-credentials@v4.0.2
-        with:
-          aws-access-key-id: ${{ secrets.ELYSIA_DEVELOP_AWS_KEY}}
-          aws-secret-access-key: ${{ secrets.ELYSIA_DEVELOP_AWS_SECRET }}
-          aws-region: ${{ env.AWS_REGION }}
-      

@@ -143,6 +143,17 @@ jobs:
             ./dist/portal/ \
             s3://${ACCOUNT}-${CBG_ENVIRONMENT}-sites --delete --sse
 
+      - name: Create CloudFront invalidation
+        env:
+          AWS_REGION: ap-south-1
+          CBG_ACCOUNT_SET: arcadia
+          CBG_ENVIRONMENT: develop
+        run: |
+          DISTRIBUTION_ID=$(aws cloudfront list-distributions --profile "$CBG_ACCOUNT_SET-$CBG_ENVIRONMENT" --query "DistributionList.Items[?contains(Aliases.Items, '${CBG_ACCOUNT_SET}-${CBG_ENVIRONMENT}')].Id" --output text)
+          aws cloudfront create-invalidation --profile "$CBG_ACCOUNT_SET-$CBG_ENVIRONMENT" \
+            --distribution-id $DISTRIBUTION_ID \
+            --paths "/index.html"
+
       - name: OWASP Zap Scan (Arcadia Prod)
         if: success() && github.ref == 'refs/heads/main'
         uses: zaproxy/action-baseline@v0.12.0

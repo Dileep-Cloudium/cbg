@@ -146,8 +146,8 @@ jobs:
       - name: Create CloudFront invalidation
         env:
           AWS_REGION: ap-south-1
-          CBG_ACCOUNT_SET: arcadia
-          CBG_ENVIRONMENT: develop
+          CBG_ACCOUNT_SET: nexusgate
+          CBG_ENVIRONMENT: pbmui
         run: |
           DISTRIBUTION_ID=$(aws cloudfront list-distributions --profile "$CBG_ACCOUNT_SET-$CBG_ENVIRONMENT" \
             --query "DistributionList.Items[?Origins.Items[?DomainName!=null && contains(DomainName, '${CBG_ACCOUNT_SET}-${CBG_ENVIRONMENT}')]].Id" \

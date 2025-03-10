@@ -149,10 +149,19 @@ jobs:
           CBG_ACCOUNT_SET: arcadia
           CBG_ENVIRONMENT: develop
         run: |
-          DISTRIBUTION_ID=$(aws cloudfront list-distributions --profile "$CBG_ACCOUNT_SET-$CBG_ENVIRONMENT" --query "DistributionList.Items[?contains(Aliases.Items, '${CBG_ACCOUNT_SET}-${CBG_ENVIRONMENT}')].Id" --output text)
+          DISTRIBUTION_ID=$(aws cloudfront list-distributions --profile "$CBG_ACCOUNT_SET-$CBG_ENVIRONMENT" \
+            --query "DistributionList.Items[?Origins.Items[?DomainName!=null && contains(DomainName, '${CBG_ACCOUNT_SET}-${CBG_ENVIRONMENT}')]].Id" \
+            --output text)
+          
+          if [ -z "$DISTRIBUTION_ID" ]; then
+            echo "No matching CloudFront distribution found"
+            exit 1
+          fi
+          
           aws cloudfront create-invalidation --profile "$CBG_ACCOUNT_SET-$CBG_ENVIRONMENT" \
             --distribution-id $DISTRIBUTION_ID \
             --paths "/index.html"
+
 
       - name: OWASP Zap Scan (Arcadia Prod)
         if: success() && github.ref == 'refs/heads/main'

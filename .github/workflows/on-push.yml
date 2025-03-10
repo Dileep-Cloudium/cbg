@@ -8,6 +8,17 @@
 name: CD code / On push to develop/main
 
 on:
+  workflow_dispatch: # Need to test the manual trigger. What does environment mean and map to?
+    inputs:
+      environment:
+        description: Environment to deploy to
+        required: true
+        type: choice
+        options:
+          - develop
+          - test
+          - prod
+        default: 'develop'
   push:
     branches:
       - main
@@ -18,6 +29,21 @@ jobs:
   buildTestAndDeploy:
     name: Build, test and deploy
     runs-on: ubuntu-latest
+
+    environment: >-
+      ${{
+        github.event_name == 'workflow_dispatch' &&
+          format('Arcadia {0}',
+            startsWith(inputs.environment, 'p') && 'Prod' ||
+            startsWith(inputs.environment, 't') && 'Test' ||
+            'Develop'
+          ) ||
+        github.ref_name == 'main' &&
+          'Arcadia Prod' ||
+        github.ref_name == 'develop' &&
+          'Arcadia Test' ||
+        'Arcadia Develop'
+      }}
 
     strategy:
       matrix:
@@ -75,8 +101,13 @@ jobs:
         run: |
           npm ci && aws --version
 
-      - name: Build UI solution (Arcadia Test)
+      - name: Build UI solution (Arcadia Develop)
         if: success() && github.ref == 'refs/heads/feature/boiler-plate'
+        run: |
+          npm run build:test
+
+      - name: Build UI solution (Arcadia Test)
+        if: success() && github.ref == 'refs/heads/develop'
         run: |
           npm run build:test
 

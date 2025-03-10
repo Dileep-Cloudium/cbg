@@ -150,7 +150,7 @@ jobs:
           CBG_ENVIRONMENT: develop
         run: |
           DISTRIBUTION_ID=$(aws cloudfront list-distributions --profile "$CBG_ACCOUNT_SET-$CBG_ENVIRONMENT" \
-            --query "DistributionList.Items[?Origins.Items[?DomainName!=null && contains(DomainName, 'nexusgate-pbmui.S3.${AWS_REGION}.amazonaws.com')]].Id" \
+            --query "DistributionList.Items[?Origins.Items[?DomainName!=null && contains(DomainName, 'nexusgate-pbmui.s3.${AWS_REGION}.amazonaws.com')]].Id" \
             --output text)
           
           echo "DISTRIBUTION_ID: " $DISTRIBUTION_ID
